@@ -1,41 +1,41 @@
 {
-	"schemaVersion": 1,
-	"id": "ai-diary",
-	"version": "${version}",
-	"name": "AI Diary",
-	"description": "This is an example description! Tell everyone what your mod is about!",
-	"authors": [
-		"Me!"
-	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
-	"license": "CC0-1.0",
-	"icon": "assets/ai-diary/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"me.datsuns.aidiary.AIDiary"
-		],
-		"client": [
-			"me.datsuns.aidiary.AIDiaryClient"
-		]
-	},
-	"mixins": [
-		"ai-diary.mixins.json",
-		{
-			"config": "ai-diary.client.mixins.json",
-			"environment": "client"
-		}
-	],
-	"depends": {
-		"fabricloader": ">=0.15.7",
-		"minecraft": "~1.20.4",
-		"java": ">=17",
-		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
-	}
+  "schemaVersion": 1,
+  "id": "ai-diary",
+  "version": "${version}",
+  "name": "AI Diary",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/ai-diary/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.datsuns.aidiary.AIDiary"
+    ],
+    "client": [
+      "me.datsuns.aidiary.AIDiaryClient"
+    ]
+  },
+  "mixins": [
+    "ai-diary.mixins.json",
+    {
+      "config": "ai-diary.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.7",
+    "minecraft": "~1.20.4",
+    "java": ">=17",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
 }

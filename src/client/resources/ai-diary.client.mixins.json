@@ -1,11 +1,11 @@
 {
-	"required": true,
-	"package": "me.datsuns.aidiary.mixin.client",
-	"compatibilityLevel": "JAVA_17",
-	"client": [
-		"ExampleClientMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+  "required": true,
+  "package": "me.datsuns.aidiary.mixin.client",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "ExampleClientMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }
