@@ -1,9 +1,9 @@
 {
 	"required": true,
-	"package": "com.example.mixin",
+	"package": "me.datsuns.aidiary.mixin.client",
 	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"ExampleMixin"
+	"client": [
+		"ExampleClientMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
