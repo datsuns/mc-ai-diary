@@ -3,13 +3,13 @@
   "id": "ai-diary",
   "version": "${version}",
   "name": "AI Diary",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "record fancy diary for yout Minecraft story!",
   "authors": [
-    "Me!"
+    "datsuns"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/datsuns/mc-ai-diary",
+    "sources": "https://github.com/datsuns/mc-ai-diary"
   },
   "license": "CC0-1.0",
   "icon": "assets/ai-diary/icon.png",
