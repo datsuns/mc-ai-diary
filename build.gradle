@@ -22,7 +22,7 @@ loom {
     splitEnvironmentSourceSets()
 
 	mods {
-		"modid" {
+		"ai-diary" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}

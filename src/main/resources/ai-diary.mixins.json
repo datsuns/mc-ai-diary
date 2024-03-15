@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "com.example.mixin",
+	"package": "me.datsuns.aidiary.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"ExampleMixin"
