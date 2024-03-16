@@ -5,6 +5,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
+// ネタ帳
+// [ ]通ったバイオーム
+// [ ]mobとのかかわり
+// [ ]置いたブロック数
+// [ ]その日の天気
+// 昔話風
+
 public class Stats {
     public Vec3d PrevPos;
     public double TotalDistance;
