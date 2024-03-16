@@ -10,6 +10,7 @@ public class Trigger {
     public Diary Diary;
     public long  CurrentDay;
 
+    // いずれはInterfaceの配列にでも
     Trigger( Stats s, Diary d){
         this.Stats = s;
         this.Diary = d;

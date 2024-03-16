@@ -31,7 +31,7 @@ public class Stats {
         double prev = this.TotalDistance;
         this.TotalDistance += cur.distanceTo(this.PrevPos);
         this.PrevPos = cur;
-        AIDiaryClient.LOGGER.info("distance {}", distance());
+        //AIDiaryClient.LOGGER.info("distance {}", distance());
     }
 
     public void reset() {
