@@ -35,6 +35,7 @@ public class Trigger {
         if( days != this.CurrentDay ){
             this.CurrentDay = days;
             this.Diary.onSave(client, this.Stats);
+            this.Stats.reset();
         }
     }
 }

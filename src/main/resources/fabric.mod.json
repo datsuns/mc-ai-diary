@@ -3,7 +3,7 @@
   "id": "ai-diary",
   "version": "${version}",
   "name": "AI Diary",
-  "description": "record fancy diary for yout Minecraft story!",
+  "description": "record fancy diary for your Minecraft story!",
   "authors": [
     "datsuns"
   ],
@@ -36,6 +36,7 @@
     "fabric-api": "*"
   },
   "suggests": {
-    "another-mod": "*"
+    "another-mod": "*",
+    "cloth-config": "*"
   }
 }

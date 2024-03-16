@@ -114,6 +114,7 @@ modrinth {
     gameVersions = ['1.20.4'] // An array of game versions the version supports
     loaders = ['fabric'] // Self-explanatory.
     dependencies = [
-            new ModDependency('P7dR8mSH', 'required') // Creates a new required dependency on Fabric API
+            new ModDependency('P7dR8mSH', 'required'), // Creates a new required dependency on Fabric API
+            new ModDependency('9s6osm5g', 'required') // Cloth Config API
     ]
 }
