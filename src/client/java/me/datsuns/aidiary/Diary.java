@@ -58,10 +58,11 @@ public class Diary {
         }
         AIDiaryClient.LOGGER.info("save diary");
         this.State = GenerationState.Generating;
+        long days = client.world.getTimeOfDay() / Trigger.TIME_PER_DAY;
+        String prompt = generatePrompt(days, stats);
         CompletableFuture.runAsync(() -> {
             try {
-                long days = client.world.getTimeOfDay() / Trigger.TIME_PER_DAY;
-                this.DiaryText = generateDiaryText(days, stats);
+                this.DiaryText = generateDiaryText(prompt);
             } catch (IOException e) {
                 //throw new RuntimeException(e);
                 AIDiaryClient.LOGGER.info("generate error");
@@ -73,8 +74,7 @@ public class Diary {
         });
     }
 
-    public String generateDiaryText(long nthDay, Stats stats) throws IOException {
-        String prompt = generatePrompt(nthDay, stats);
+    public String generateDiaryText(String prompt) throws IOException {
         AIDiaryClient.LOGGER.info("prompt is {}", prompt);
         JsonNode r = issueGeminiRequest(prompt);
         String generated = "";
