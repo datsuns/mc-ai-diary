@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 
 public class Trigger {
-    public final long TIME_PER_DAY = 24000;
+    public static final long TIME_PER_DAY = 24000;
 
     public Stats Stats;
     public Diary Diary;
@@ -34,7 +34,7 @@ public class Trigger {
         }
         if( days != this.CurrentDay ){
             this.CurrentDay = days;
-            this.Diary.onSave(client);
+            this.Diary.onSave(client, this.Stats);
         }
     }
 }
