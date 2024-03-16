@@ -12,7 +12,7 @@ public class AIDiaryClient implements ClientModInitializer {
     public void onInitializeClient() {
         this.Trigger = new Trigger(
                 new Stats(),
-                new Diary("", Config.DiaryFileName)
+                new Diary()
         );
     }
 }

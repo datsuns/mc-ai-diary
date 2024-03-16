@@ -18,6 +18,7 @@ public class Trigger {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             onClientTick(client);
             this.Stats.onClientTick(client);
+            this.Diary.onClientTick(client);
         });
     }
 
@@ -33,7 +34,7 @@ public class Trigger {
         }
         if( days != this.CurrentDay ){
             this.CurrentDay = days;
-            this.Diary.onSave();
+            this.Diary.onSave(client);
         }
     }
 }
