@@ -17,8 +17,6 @@ public class Trigger {
         this.CurrentDay = -1;
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             onClientTick(client);
-            this.Stats.onClientTick(client);
-            this.Diary.onClientTick(client);
         });
     }
 
@@ -37,5 +35,7 @@ public class Trigger {
             this.Diary.onSave(client, this.Stats);
             this.Stats.reset();
         }
+        this.Stats.onClientTick(client);
+        this.Diary.onClientTick(client);
     }
 }
