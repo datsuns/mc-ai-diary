@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.text.Text;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -50,7 +51,7 @@ public class Diary {
     }
 
     public void onSave(MinecraftClient client, Stats stats) {
-        if (this.ApiKey == "" ){
+        if (this.ApiKey == "") {
             AIDiaryClient.LOGGER.info("api key is not set");
             return;
         }
@@ -99,7 +100,7 @@ public class Diary {
                         + "- the %d th day of playing \n"
                         + "- move %d meters\n"
                         + "- weather of the day\n"
-                , "Japanese"
+                , Text.translatable("diary.text.language").getString()
                 , 7
                 , nthDay
                 , (int) stats.distance()
