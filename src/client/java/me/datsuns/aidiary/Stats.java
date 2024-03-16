@@ -14,12 +14,9 @@ public class Stats {
         this.PrevPos = new Vec3d(0.0, 0.0, 0.0);
         this.TotalDistance = 0.0F;
         this.Initialized = false;
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            clientTickHandler(client);
-        });
     }
 
-    void clientTickHandler(MinecraftClient client) {
+    void onClientTick(MinecraftClient client) {
         ClientPlayerEntity e = client.player;
         if (e == null) {
             return;
@@ -34,7 +31,7 @@ public class Stats {
         double prev = this.TotalDistance;
         this.TotalDistance += cur.distanceTo(this.PrevPos);
         this.PrevPos = cur;
-        //AIDiaryClient.LOGGER.info("distance {}", distance());
+        AIDiaryClient.LOGGER.info("distance {}", distance());
     }
 
     public void reset() {
