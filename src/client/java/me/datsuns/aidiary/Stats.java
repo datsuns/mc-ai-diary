@@ -43,7 +43,6 @@ public class Stats {
 
     public void reset() {
         this.TotalDistance = 0.0F;
-        this.PrevPos = null;
     }
 
     public double distance() {
