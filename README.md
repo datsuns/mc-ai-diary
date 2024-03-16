@@ -3,7 +3,8 @@
 [日本語の説明はこちら](./README.ja.md)
 
 Generate Diary by Gemini AI.  
-Generated Diary will be posted as chat.
+Generated Diary will be posted as chat.  
+Diary text depends on your playing✌️
 
 ![Play Screen](./images/screenshot.png)
 
