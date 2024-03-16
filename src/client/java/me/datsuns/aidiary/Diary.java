@@ -15,6 +15,8 @@ import org.apache.http.entity.StringEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -89,6 +91,17 @@ public class Diary {
     }
 
     public String generatePrompt(long nthDay, Stats stats) {
+        String attacked = "";
+        if (stats.Attacked.size() == 0) {
+            attacked = "    - nothing";
+        } else {
+            for (Map.Entry<String, HashMap<String, Integer>> entry : stats.Attacked.entrySet()) {
+                attacked += String.format("    - target: %s\n", entry.getKey());
+                for (Map.Entry<String, Integer> details : entry.getValue().entrySet()) {
+                    attacked += String.format("       - by %s, %d times\n", details.getKey(), details.getValue());
+                }
+            }
+        }
         return String.format(
                 "write a diary about Minecraft in %s. \n"
                         + "write weather and playing day on the top of diary.\n"
@@ -98,10 +111,13 @@ public class Diary {
                         + "- the %d th day of playing \n"
                         + "- move %d meters\n"
                         + "- weather of the day\n"
+                        + "- attack result\n"
+                        + "%s"
                 , Text.translatable("diary.text.language").getString()
                 , 7
                 , nthDay
                 , (int) stats.distance()
+                , attacked
         );
     }
 

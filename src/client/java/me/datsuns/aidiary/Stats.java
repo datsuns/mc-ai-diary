@@ -3,7 +3,12 @@ package me.datsuns.aidiary;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 // ネタ帳
 // [ ]通ったバイオーム
@@ -16,11 +21,14 @@ public class Stats {
     public Vec3d PrevPos;
     public double TotalDistance;
     public Boolean Initialized; // need better implementation.
+    public HashMap<String, HashMap<String, Integer>> Attacked;
 
     Stats() {
         this.PrevPos = new Vec3d(0.0, 0.0, 0.0);
         this.TotalDistance = 0.0F;
         this.Initialized = false;
+        Map m = new HashMap<String, Integer>();
+        this.Attacked = new HashMap<String, HashMap<String, Integer>>();
     }
 
     void onClientTick(MinecraftClient client) {
@@ -41,8 +49,25 @@ public class Stats {
         //AIDiaryClient.LOGGER.info("distance {}", distance());
     }
 
+    void onClientAttacked(String target, String how) {
+        Map<String, Integer> m = this.Attacked.get(target);
+        if (m != null) {
+            if (m.containsKey(how)) {
+                Integer next = m.get(how).intValue() + 1;
+                m.put(how, next);
+            } else {
+                m.put(how, 1);
+            }
+        } else {
+            HashMap<String, Integer> newEntry = new HashMap<String, Integer>();
+            newEntry.put(how, 1);
+            this.Attacked.put(target, newEntry);
+        }
+    }
+
     public void reset() {
         this.TotalDistance = 0.0F;
+        this.Attacked.clear();
     }
 
     public double distance() {
