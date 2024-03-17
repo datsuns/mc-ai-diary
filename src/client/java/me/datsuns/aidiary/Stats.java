@@ -26,6 +26,7 @@ public class Stats {
     public HashMap<String, HashMap<String, Integer>> Attacked;
     public ArrayList<String> VisitedBioms;
     public HashMap<String, Integer> UsedItem;
+    public HashMap<String, Integer> UsedEntity;
 
     Stats() {
         this.PrevPos = new Vec3d(0.0, 0.0, 0.0);
@@ -35,6 +36,7 @@ public class Stats {
         this.Attacked = new HashMap<String, HashMap<String, Integer>>();
         this.VisitedBioms = new ArrayList<String>();
         this.UsedItem = new HashMap<String, Integer>();
+        this.UsedEntity = new HashMap<String, Integer>();
     }
 
     void onClientTick(MinecraftClient client) {
@@ -85,11 +87,21 @@ public class Stats {
         }
     }
 
+    void onEntityUsed(String entity) {
+        Integer cur = this.UsedEntity.get(entity);
+        if (cur == null) {
+            this.UsedEntity.put(entity, 1);
+        } else {
+            this.UsedEntity.put(entity, cur + 1);
+        }
+    }
+
     public void reset() {
         this.TotalDistance = 0.0F;
         this.Attacked.clear();
         this.VisitedBioms.clear();
         this.UsedItem.clear();
+        this.UsedEntity.clear();
     }
 
     public double distance() {

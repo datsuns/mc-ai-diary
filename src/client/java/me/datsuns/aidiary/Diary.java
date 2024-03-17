@@ -114,6 +114,14 @@ public class Diary {
                 items += String.format("    - %s, %d times\n", item.getKey(), item.getValue());
             }
         }
+        String entities = "";
+        if( stats.UsedEntity.size() == 0 ) {
+            entities = "    - nothing\n";
+        } else {
+            for (Map.Entry<String, Integer> item : stats.UsedEntity.entrySet()) {
+                entities += String.format("    - %s, %d times\n", item.getKey(), item.getValue());
+            }
+        }
         return String.format(
                 "write a diary about Minecraft in %s. \n"
                         + "write weather and playing day on the top of diary.\n"
@@ -129,6 +137,8 @@ public class Diary {
                         + "%s\n"
                         + "- used items\n"
                         + "%s\n"
+                        + "- communicated mobs\n"
+                        + "%s\n"
                 , Text.translatable("diary.text.language").getString()
                 , 7
                 , nthDay
@@ -136,6 +146,7 @@ public class Diary {
                 , attacked
                 , bioms
                 , items
+                , entities
         );
     }
 
