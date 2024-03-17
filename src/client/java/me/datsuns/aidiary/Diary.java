@@ -93,7 +93,7 @@ public class Diary {
     public String generatePrompt(long nthDay, Stats stats) {
         String attacked = "";
         if (stats.Attacked.size() == 0) {
-            attacked = "    - nothing";
+            attacked = "    - nothing\n";
         } else {
             for (Map.Entry<String, HashMap<String, Integer>> entry : stats.Attacked.entrySet()) {
                 attacked += String.format("    - target: %s\n", entry.getKey());
@@ -101,6 +101,10 @@ public class Diary {
                     attacked += String.format("       - by %s, %d times\n", details.getKey(), details.getValue());
                 }
             }
+        }
+        String bioms = "   - ";
+        for (String biom : stats.VisitedBioms ){
+            bioms += String.format("%s,", biom);
         }
         return String.format(
                 "write a diary about Minecraft in %s. \n"
@@ -112,12 +116,15 @@ public class Diary {
                         + "- move %d meters\n"
                         + "- weather of the day\n"
                         + "- attack result\n"
-                        + "%s"
+                        + "%s\n"
+                        + "- visited bioms\n"
+                        + "%s\n"
                 , Text.translatable("diary.text.language").getString()
                 , 7
                 , nthDay
                 , (int) stats.distance()
                 , attacked
+                , bioms
         );
     }
 

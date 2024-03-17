@@ -4,7 +4,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.AttackIndicator;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.biome.Biome;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ public class Stats {
     public double TotalDistance;
     public Boolean Initialized; // need better implementation.
     public HashMap<String, HashMap<String, Integer>> Attacked;
+    public ArrayList<String> VisitedBioms;
 
     Stats() {
         this.PrevPos = new Vec3d(0.0, 0.0, 0.0);
@@ -29,6 +32,7 @@ public class Stats {
         this.Initialized = false;
         Map m = new HashMap<String, Integer>();
         this.Attacked = new HashMap<String, HashMap<String, Integer>>();
+        this.VisitedBioms = new ArrayList<String>();
     }
 
     void onClientTick(MinecraftClient client) {
@@ -47,6 +51,11 @@ public class Stats {
         this.TotalDistance += cur.distanceTo(this.PrevPos);
         this.PrevPos = cur;
         //AIDiaryClient.LOGGER.info("distance {}", distance());
+        RegistryEntry<Biome> b = e.getWorld().getBiome(e.getBlockPos());
+        String biom = b.getKey().get().getValue().getPath().toString();
+        if( !this.VisitedBioms.contains(biom) ){
+            this.VisitedBioms.add(biom);
+        }
     }
 
     void onClientAttacked(String target, String how) {
@@ -68,6 +77,7 @@ public class Stats {
     public void reset() {
         this.TotalDistance = 0.0F;
         this.Attacked.clear();
+        this.VisitedBioms.clear();
     }
 
     public double distance() {
