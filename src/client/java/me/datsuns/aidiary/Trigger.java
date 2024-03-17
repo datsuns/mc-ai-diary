@@ -80,14 +80,11 @@ public class Trigger {
 
     // TODO 使用したアイテムの形状
     public void onUseItemCallback(PlayerEntity player, World world, Hand hand) {
-        String n1 = "";
-        String n2 = "";
         ItemStack s = player.getStackInHand(hand);
         if (s != null) {
-            n1 = s.getName().getString();
-            n2 = s.getItem().getName().getString();
+            this.Stats.onItemUsed( s.getTranslationKey() );
+            //AIDiaryClient.LOGGER.info("onUseItemCallback);
         }
-        AIDiaryClient.LOGGER.info("onUseItemCallback n1{} n2{}", n1, n2);
     }
 
     // TODO 「使った」mobの計上
@@ -125,8 +122,6 @@ public class Trigger {
         AIDiaryClient.LOGGER.info("onPlayerBlockBreakEvents e[{}] s[{}] p[{}]", e, s, p);
     }
 
-    // TODO 攻撃対象の計上
-    // TODO 攻撃方法の計上
     public void onAttackEntityCallback(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
         if (entity != null) {
             //String target = entity.getDisplayName().getString();

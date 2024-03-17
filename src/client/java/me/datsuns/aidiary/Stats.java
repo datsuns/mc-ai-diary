@@ -25,6 +25,7 @@ public class Stats {
     public Boolean Initialized; // need better implementation.
     public HashMap<String, HashMap<String, Integer>> Attacked;
     public ArrayList<String> VisitedBioms;
+    public HashMap<String, Integer> UsedItem;
 
     Stats() {
         this.PrevPos = new Vec3d(0.0, 0.0, 0.0);
@@ -33,6 +34,7 @@ public class Stats {
         Map m = new HashMap<String, Integer>();
         this.Attacked = new HashMap<String, HashMap<String, Integer>>();
         this.VisitedBioms = new ArrayList<String>();
+        this.UsedItem = new HashMap<String, Integer>();
     }
 
     void onClientTick(MinecraftClient client) {
@@ -53,7 +55,7 @@ public class Stats {
         //AIDiaryClient.LOGGER.info("distance {}", distance());
         RegistryEntry<Biome> b = e.getWorld().getBiome(e.getBlockPos());
         String biom = b.getKey().get().getValue().getPath().toString();
-        if( !this.VisitedBioms.contains(biom) ){
+        if (!this.VisitedBioms.contains(biom)) {
             this.VisitedBioms.add(biom);
         }
     }
@@ -74,10 +76,20 @@ public class Stats {
         }
     }
 
+    void onItemUsed(String item) {
+        Integer cur = this.UsedItem.get(item);
+        if (cur == null) {
+            this.UsedItem.put(item, 1);
+        } else {
+            this.UsedItem.put(item, cur + 1);
+        }
+    }
+
     public void reset() {
         this.TotalDistance = 0.0F;
         this.Attacked.clear();
         this.VisitedBioms.clear();
+        this.UsedItem.clear();
     }
 
     public double distance() {
