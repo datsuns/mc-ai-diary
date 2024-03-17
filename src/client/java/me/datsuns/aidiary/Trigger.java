@@ -53,10 +53,10 @@ public class Trigger {
         //EntityTrackingEvents.STOP_TRACKING.register((trackedEntity, player) -> {
         //    onEntityTrackingEventsStop(trackedEntity, player);
         //});
-        AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
-            onAttackBlockCallback(player, world, hand, pos, direction);
-            return ActionResult.PASS;
-        });
+        //AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
+        //    onAttackBlockCallback(player, world, hand, pos, direction);
+        //    return ActionResult.PASS;
+        //});
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             onAttackEntityCallback(player, world, hand, entity, hitResult);
             return ActionResult.PASS;
@@ -105,17 +105,15 @@ public class Trigger {
         if (state != null) {
             String block = state.getRegistryEntry().getKey().get().getValue().getPath();
             this.Stats.onBlockDestroy(block);
-            AIDiaryClient.LOGGER.info("onPlayerBlockBreakEvents b[{}]", block);
+            //AIDiaryClient.LOGGER.info("onPlayerBlockBreakEvents b[{}]", block);
         }
     }
 
     public void onAttackEntityCallback(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
         if (entity != null) {
-            //String target = entity.getDisplayName().getString();
             String target = entity.getType().getTranslationKey();
-            //String how = player.getStackInHand(hand).getName().getString();
             String how = player.getStackInHand(hand).getTranslationKey();
-            AIDiaryClient.LOGGER.info("onAttackEntityCallback target[{}] how[{}]", target, how);
+            //AIDiaryClient.LOGGER.info("onAttackEntityCallback target[{}] how[{}]", target, how);
             this.Stats.onClientAttacked(target, how);
         }
     }
