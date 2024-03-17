@@ -106,6 +106,14 @@ public class Diary {
         for (String biom : stats.VisitedBioms ){
             bioms += String.format("%s,", biom);
         }
+        String items = "";
+        if( stats.UsedItem.size() == 0 ) {
+            items = "    - nothing\n";
+        } else {
+            for (Map.Entry<String, Integer> item : stats.UsedItem.entrySet()) {
+                items += String.format("    - %s, %d times\n", item.getKey(), item.getValue());
+            }
+        }
         return String.format(
                 "write a diary about Minecraft in %s. \n"
                         + "write weather and playing day on the top of diary.\n"
@@ -119,12 +127,15 @@ public class Diary {
                         + "%s\n"
                         + "- visited bioms\n"
                         + "%s\n"
+                        + "- used items\n"
+                        + "%s\n"
                 , Text.translatable("diary.text.language").getString()
                 , 7
                 , nthDay
                 , (int) stats.distance()
                 , attacked
                 , bioms
+                , items
         );
     }
 
