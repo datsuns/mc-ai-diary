@@ -26,6 +26,7 @@ public class Stats {
     public HashMap<String, HashMap<String, Integer>> Attacked;
     public ArrayList<String> VisitedBioms;
     public HashMap<String, Integer> UsedItem;
+    public HashMap<String, Integer> UsedBlock;
     public HashMap<String, Integer> UsedEntity;
 
     Stats() {
@@ -36,6 +37,7 @@ public class Stats {
         this.Attacked = new HashMap<String, HashMap<String, Integer>>();
         this.VisitedBioms = new ArrayList<String>();
         this.UsedItem = new HashMap<String, Integer>();
+        this.UsedBlock = new HashMap<String, Integer>();
         this.UsedEntity = new HashMap<String, Integer>();
     }
 
@@ -96,11 +98,21 @@ public class Stats {
         }
     }
 
+    void onBlockUsed(String block) {
+        Integer cur = this.UsedBlock.get(block);
+        if (cur == null) {
+            this.UsedBlock.put(block, 1);
+        } else {
+            this.UsedBlock.put(block, cur + 1);
+        }
+    }
+
     public void reset() {
         this.TotalDistance = 0.0F;
         this.Attacked.clear();
         this.VisitedBioms.clear();
         this.UsedItem.clear();
+        this.UsedBlock.clear();
         this.UsedEntity.clear();
     }
 
