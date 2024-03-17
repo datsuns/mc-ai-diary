@@ -93,13 +93,12 @@ public class Trigger {
         }
     }
 
-    // TODO 使ったブロックの計上
     public void onUseBlockCallback(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
-        String r = "";
         if ((hitResult != null) && (world != null)) {
-            r = world.getBlockState(hitResult.getBlockPos()).getBlock().getName().getString();
+            String block = world.getBlockState(hitResult.getBlockPos()).getBlock().getTranslationKey();
+            this.Stats.onBlockUsed(block);
+            //AIDiaryClient.LOGGER.info("onUseBlockCallback {}", block);
         }
-        AIDiaryClient.LOGGER.info("onUseBlockCallback r{}", r);
     }
 
     // TODO 壊したブロックの計上

@@ -114,6 +114,14 @@ public class Diary {
                 items += String.format("    - %s, %d times\n", item.getKey(), item.getValue());
             }
         }
+        String blocks = "";
+        if( stats.UsedBlock.size() == 0 ) {
+            blocks = "    - nothing\n";
+        } else {
+            for (Map.Entry<String, Integer> item : stats.UsedBlock.entrySet()) {
+                blocks += String.format("    - %s, %d times\n", item.getKey(), item.getValue());
+            }
+        }
         String entities = "";
         if( stats.UsedEntity.size() == 0 ) {
             entities = "    - nothing\n";
@@ -137,6 +145,8 @@ public class Diary {
                         + "%s\n"
                         + "- used items\n"
                         + "%s\n"
+                        + "- used blocks\n"
+                        + "%s\n"
                         + "- communicated mobs\n"
                         + "%s\n"
                 , Text.translatable("diary.text.language").getString()
@@ -146,6 +156,7 @@ public class Diary {
                 , attacked
                 , bioms
                 , items
+                , blocks
                 , entities
         );
     }
