@@ -78,22 +78,19 @@ public class Trigger {
         });
     }
 
-    // TODO 使用したアイテムの形状
     public void onUseItemCallback(PlayerEntity player, World world, Hand hand) {
         ItemStack s = player.getStackInHand(hand);
         if (s != null) {
-            this.Stats.onItemUsed( s.getTranslationKey() );
+            this.Stats.onItemUsed(s.getTranslationKey());
             //AIDiaryClient.LOGGER.info("onUseItemCallback);
         }
     }
 
-    // TODO 「使った」mobの計上
     public void onUseEntityCallback(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        String e = "";
         if (entity != null) {
-            e = entity.getDisplayName().getString();
+            this.Stats.onEntityUsed(entity.getType().getTranslationKey());
+            //AIDiaryClient.LOGGER.info("onUseEntityCallback e{}", entity.getType().getTranslationKey());
         }
-        AIDiaryClient.LOGGER.info("onUseEntityCallback e{}", e);
     }
 
     // TODO 使ったブロックの計上
@@ -135,8 +132,7 @@ public class Trigger {
 
     // TODO 攻撃対象の計上
     // TODO 攻撃方法の計上
-    public void onAttackBlockCallback(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction
-            direction) {
+    public void onAttackBlockCallback(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction) {
         AIDiaryClient.LOGGER.info("onAttackBlockCallback {}", hand.name());
     }
 
