@@ -101,21 +101,12 @@ public class Trigger {
         }
     }
 
-    // TODO 壊したブロックの計上
     public void onPlayerBlockBreakEvents(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity entity) {
-        String e = "";
-        String s = "";
-        String p = "";
-        if (entity != null) {
-            e = entity.getType().toString();
-        }
         if (state != null) {
-            s = state.getBlock().getName().getString();
+            String block = state.getRegistryEntry().getKey().get().getValue().getPath();
+            this.Stats.onBlockDestroy(block);
+            AIDiaryClient.LOGGER.info("onPlayerBlockBreakEvents b[{}]", block);
         }
-        if (pos != null) {
-            p = pos.toString();
-        }
-        AIDiaryClient.LOGGER.info("onPlayerBlockBreakEvents e[{}] s[{}] p[{}]", e, s, p);
     }
 
     public void onAttackEntityCallback(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
