@@ -15,6 +15,7 @@ import org.apache.http.entity.StringEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -90,6 +91,25 @@ public class Diary {
 
     }
 
+    public String generatePromptContents(HashMap<String, Integer> map, String format) {
+        if (map.size() == 0) {
+            return "    - nothing\n";
+        }
+        String ret = "";
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            ret += String.format(format, entry.getKey(), entry.getValue());
+        }
+        return ret;
+    }
+
+    public String generatePromptContents(ArrayList<String> list, String prefix) {
+        String ret = prefix;
+        for (String v : list) {
+            ret += String.format("%s,", v);
+        }
+        return ret;
+    }
+
     public String generatePrompt(long nthDay, Stats stats) {
         String attacked = "";
         if (stats.Attacked.size() == 0) {
@@ -102,42 +122,11 @@ public class Diary {
                 }
             }
         }
-        String bioms = "   - ";
-        for (String biom : stats.VisitedBioms ){
-            bioms += String.format("%s,", biom);
-        }
-        String items = "";
-        if( stats.UsedItem.size() == 0 ) {
-            items = "    - nothing\n";
-        } else {
-            for (Map.Entry<String, Integer> item : stats.UsedItem.entrySet()) {
-                items += String.format("    - %s, %d times\n", item.getKey(), item.getValue());
-            }
-        }
-        String blocks = "";
-        if( stats.UsedBlock.size() == 0 ) {
-            blocks = "    - nothing\n";
-        } else {
-            for (Map.Entry<String, Integer> item : stats.UsedBlock.entrySet()) {
-                blocks += String.format("    - %s, %d times\n", item.getKey(), item.getValue());
-            }
-        }
-        String destroyBlocks = "";
-        if( stats.DestroyBlock.size() == 0 ) {
-            destroyBlocks = "    - nothing\n";
-        } else {
-            for (Map.Entry<String, Integer> item : stats.DestroyBlock.entrySet()) {
-                destroyBlocks += String.format("    - %s, %d blocks\n", item.getKey(), item.getValue());
-            }
-        }
-        String entities = "";
-        if( stats.UsedEntity.size() == 0 ) {
-            entities = "    - nothing\n";
-        } else {
-            for (Map.Entry<String, Integer> item : stats.UsedEntity.entrySet()) {
-                entities += String.format("    - %s, %d times\n", item.getKey(), item.getValue());
-            }
-        }
+        String bioms = generatePromptContents(stats.VisitedBioms, "   - ");
+        String items = generatePromptContents(stats.UsedItem, "    - %s, %d times\n");
+        String blocks = generatePromptContents(stats.UsedBlock, "    - %s, %d times\n");
+        String destroyBlocks = generatePromptContents(stats.DestroyBlock, "    - %s, %d blocks\n");
+        String entities = generatePromptContents(stats.UsedEntity, "    - %s, %d times\n");
         return String.format(
                 "write a diary about Minecraft in %s. \n"
                         + "write weather and playing day on the top of diary.\n"
