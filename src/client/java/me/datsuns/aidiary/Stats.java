@@ -24,6 +24,7 @@ public class Stats {
     public double TotalDistance;
     public Boolean Initialized; // need better implementation.
     public HashMap<String, HashMap<String, Integer>> Attacked;
+    public ArrayList<String> Weather;
     public ArrayList<String> VisitedBioms;
     public HashMap<String, Integer> UsedItem;
     public HashMap<String, Integer> UsedBlock;
@@ -37,6 +38,7 @@ public class Stats {
         Map m = new HashMap<String, Integer>();
         this.Attacked = new HashMap<String, HashMap<String, Integer>>();
         this.VisitedBioms = new ArrayList<String>();
+        this.Weather = new ArrayList<String>();
         this.UsedItem = new HashMap<String, Integer>();
         this.UsedBlock = new HashMap<String, Integer>();
         this.DestroyBlock = new HashMap<String, Integer>();
@@ -121,6 +123,7 @@ public class Stats {
     public void reset() {
         this.TotalDistance = 0.0F;
         this.Attacked.clear();
+        this.Weather.clear();
         this.VisitedBioms.clear();
         this.UsedItem.clear();
         this.UsedBlock.clear();
