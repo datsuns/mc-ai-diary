@@ -2,7 +2,7 @@
 
 [日本語の説明はこちら](./README.ja.md)
 
-Generate Diary by Gemini AI.  
+Automatic Diary Generator by Gemini AI.  
 Generated Diary will be posted as chat.  
 Diary text depends on your playing✌️
 
@@ -10,7 +10,7 @@ Diary text depends on your playing✌️
 
 # Setup
 
-You need 3 procedures to user this mod. 
+You need 3 steps to use this mod. 
 + Install dependency
 + Generate Gemini API key
 + Set API key to this mod
