@@ -7,6 +7,11 @@
 
 ![Play Screen](./images/screenshot.ja.png)
 
+# ダウンロード
+
+こちらサイトからダウンロードください  
+[Modrinth ai-diary](https://modrinth.com/mod/ai-diary/versions#all-versions)
+
 # 設定方法
 
 以下の設定が必要です

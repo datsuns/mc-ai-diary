@@ -11,6 +11,10 @@ Diary text depends on your playing✌️
 
 ![Play Screen](./images/screenshot.png)
 
+# Download
+
+please download published .jar from [Modrinth ai-diary](https://modrinth.com/mod/ai-diary/versions#all-versions)
+
 # Setup
 
 You need 3 steps to use this mod. 
