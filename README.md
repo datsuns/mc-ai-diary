@@ -1,5 +1,8 @@
 # AI Diary Mod
 
+[![Automatic Build](https://github.com/datsuns/mc-ai-diary/actions/workflows/build.yml/badge.svg)](https://github.com/datsuns/mc-ai-diary/actions/workflows/build.yml)
+[![Modrinth downloads](https://img.shields.io/modrinth/dt/NBv764f5?logo=modrinth&label=Modrinth&color=2200FF)](https://modrinth.com/mod/ai-diary)
+
 [日本語の説明はこちら](./README.ja.md)
 
 Automatic Diary Generator by Gemini AI.  
