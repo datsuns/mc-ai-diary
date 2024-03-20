@@ -29,7 +29,7 @@ please install followings:
 * [fabric](https://modrinth.com/mod/fabric-api)
 * [cloth-config](https://modrinth.com/mod/cloth-config)
 
-## Generate Gemini API 
+## Generate Gemini API key
 
 * prepare your Google account
 * Access to [Google AI Studio](https://aistudio.google.com/)
