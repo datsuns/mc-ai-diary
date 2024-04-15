@@ -1,7 +1,7 @@
 package me.datsuns.aidiary;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -13,15 +13,15 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 
 public class Diary {
@@ -38,9 +38,10 @@ public class Diary {
         if (this.State != GenerationState.Completed) {
             return;
         }
-        AIDiaryClient.LOGGER.info("diary generated");
+        //AIDiaryClient.LOGGER.info("diary generated");
         IntegratedServer s = client.getServer();
         if (s == null) {
+            AIDiaryClient.LOGGER.error("Diary::onClientTick: client.getServer() ERROR");
             return;
         }
         ServerCommandSource src = s.getCommandSource();
@@ -53,13 +54,13 @@ public class Diary {
 
     public void onSave(MinecraftClient client, Stats stats) {
         if (this.ApiKey == "") {
-            AIDiaryClient.LOGGER.info("api key is not set");
+            AIDiaryClient.LOGGER.error("api key is not set");
             return;
         }
         if (this.State != GenerationState.Idle) {
-            AIDiaryClient.LOGGER.info("now on busy. skip.");
+            AIDiaryClient.LOGGER.error("now on busy. skip.");
         }
-        AIDiaryClient.LOGGER.info("save diary");
+        //AIDiaryClient.LOGGER.info("save diary");
         this.State = GenerationState.Generating;
         long days = client.world.getTimeOfDay() / Trigger.TIME_PER_DAY;
         String prompt = generatePrompt(days, stats);
@@ -68,24 +69,24 @@ public class Diary {
                 this.DiaryText = generateDiaryText(prompt);
             } catch (IOException e) {
                 //throw new RuntimeException(e);
-                AIDiaryClient.LOGGER.info("generate error");
+                AIDiaryClient.LOGGER.error("generate error {}", e);
                 this.State = GenerationState.Idle;
                 return;
             }
-            AIDiaryClient.LOGGER.info("done");
+            //AIDiaryClient.LOGGER.info("generate diary done");
             this.State = GenerationState.Completed;
         });
     }
 
     public String generateDiaryText(String prompt) throws IOException {
-        AIDiaryClient.LOGGER.info("prompt is {}", prompt);
-        JsonNode r = issueGeminiRequest(prompt);
+        //AIDiaryClient.LOGGER.info("prompt is {}", prompt);
+        String rawJson = issueGeminiRequest(prompt);
         String generated = "";
         try {
-            generated = r.get("candidates").get(0).get("content").get("parts").get(0).get("text").asText();
-            AIDiaryClient.LOGGER.info("generated text {}", generated);
-        } finally {
-            AIDiaryClient.LOGGER.warn("Generate Error");
+            generated = parseGeminiResponseJson(rawJson);
+            //AIDiaryClient.LOGGER.info("generated text {}", generated);
+        } catch (RuntimeException e) {
+            AIDiaryClient.LOGGER.error("Generate Error {}", e);
         }
         return generated;
 
@@ -128,7 +129,7 @@ public class Diary {
         String destroyBlocks = generatePromptContents(stats.DestroyBlock, "    - %s, %d blocks\n");
         String entities = generatePromptContents(stats.UsedEntity, "    - %s, %d times\n");
         return String.format(
-                "write a diary about Minecraft in %s. \n"
+                "write a diary about Minecraft in %s with the character encoding set to UTF-8.\n"
                         + "write weather and playing day on the top of diary.\n"
                         + "sentences of diary should be funny and passionate.\n"
                         + "write within %d lines.\n"
@@ -162,27 +163,41 @@ public class Diary {
         );
     }
 
-    private JsonNode issueGeminiRequest(String prompot) throws IOException {
+    private String buildGeminiRequestBody(String prompot) throws IOException {
+        JsonObject root = new JsonObject();
+        JsonObject child = new JsonObject();
+        JsonObject text = new JsonObject();
+        text.addProperty("text", prompot);
+        child.add("parts", text);
+        root.add("contents", child);
+        return root.toString();
+    }
+
+    private String parseGeminiResponseJson(String rawJson) {
+        JsonObject jsonObj = (JsonObject) new Gson().fromJson(rawJson, JsonObject.class);
+        JsonArray candidates = jsonObj.get("candidates").getAsJsonArray();
+        JsonObject candidate = candidates.get(0).getAsJsonObject();
+        JsonObject content = candidate.get("content").getAsJsonObject();
+        JsonArray parts = content.get("parts").getAsJsonArray();
+        JsonObject part = parts.get(0).getAsJsonObject();
+        return part.get("text").getAsString();
+    }
+
+    private String issueGeminiRequest(String prompot) throws IOException {
         String reqUrl = String.format(
                 "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=%s",
                 this.ApiKey
         );
+        String body = buildGeminiRequestBody(prompot);
         HttpClient client = HttpClientBuilder.create().build();
-        JSONObject json = new JSONObject();
-        JSONObject child = new JSONObject();
-        JSONObject text = new JSONObject();
-        text.put("text", prompot);
-        child.append("parts", text);
-        json.append("contents", child);
-        StringEntity input = new StringEntity(json.toString());
+        StringEntity input = new StringEntity(body);
         HttpPost post = new HttpPost(reqUrl);
         post.setEntity(input);
+
         HttpResponse response = client.execute(post);
         HttpEntity httpEntity = response.getEntity();
         InputStream in = httpEntity.getContent();
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode r = objectMapper.readTree(in);
-        return r;
+        return new String(in.readAllBytes(), StandardCharsets.UTF_8);
     }
 
     public enum GenerationState {
