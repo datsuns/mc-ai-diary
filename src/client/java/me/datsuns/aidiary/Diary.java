@@ -55,7 +55,7 @@ public class Diary {
     }
 
     public void onSave(MinecraftClient client, Stats stats) {
-        if (this.ApiKey == "") {
+        if (this.ApiKey.isEmpty()) {
             AIDiaryClient.LOGGER.error("api key is not set");
             return;
         }
