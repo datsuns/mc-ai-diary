@@ -15,9 +15,7 @@ import org.apache.http.entity.StringEntity;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -25,6 +23,7 @@ import com.google.gson.Gson;
 
 
 public class Diary {
+    public final Integer MaxLengthPerOneChat = 240;
     public GenerationState State;
     public String DiaryText;
     public String ApiKey;
@@ -46,8 +45,11 @@ public class Diary {
         }
         ServerCommandSource src = s.getCommandSource();
         CommandManager cm = s.getCommandManager();
-        String cmd = String.format("say %s", this.DiaryText);
-        cm.executeWithPrefix(src, cmd);
+        for( String t : usingSplitMethod(this.DiaryText, MaxLengthPerOneChat) ) {
+            String cmd = String.format("say %s", t);
+            //AIDiaryClient.LOGGER.info("issue command [{}]", cmd);
+            cm.executeWithPrefix(src, cmd);
+        }
         this.DiaryText = "";
         this.State = GenerationState.Idle;
     }
@@ -198,6 +200,17 @@ public class Diary {
         HttpEntity httpEntity = response.getEntity();
         InputStream in = httpEntity.getContent();
         return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+    }
+
+    List<String> usingSplitMethod(String text, int n) {
+        //String[] results = text.split("(?<=\\G.{" + n + "})");
+        //return Arrays.asList(results);
+        List<String> chunks = new ArrayList<>();
+        int length = text.length();
+        for (int i = 0; i < length; i += n) {
+            chunks.add(text.substring(i, Math.min(length, i + n)));
+        }
+        return chunks;
     }
 
     public enum GenerationState {
