@@ -1,8 +1,6 @@
 package me.datsuns.aidiary;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockApplyCallback;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.fabricmc.fabric.api.event.player.*;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.minecraft.block.BlockState;
@@ -14,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -39,10 +36,14 @@ public class Trigger {
 
     public void registerCallback() {
         ClientTickEvents.END_CLIENT_TICK.register(this::onClientTick);
-        //ClientPickBlockApplyCallback.EVENT.register((player, result, stack) -> {
+
+        // memo) ClientPickBlockApplyCallback may replace to PlayerPickItemEvents.BLOCK.register
+        // ClientPickBlockApplyCallback.EVENT.register((player, result, stack) -> {
         //    onClientPickBlockApply(player, result, stack);
         //    return stack;
         //});
+
+        // memo) ClientPickBlockGatherCallback may replace to PlayerPickItemEvents.BLOCK.register
         //ClientPickBlockGatherCallback.EVENT.register((player, result) -> {
         //    onClientPickBlockGather(player, result);
         //    return null;
@@ -74,46 +75,48 @@ public class Trigger {
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
             onUseItemCallback(player, world, hand);
-            return TypedActionResult.pass(ItemStack.EMPTY);
+            return ActionResult.PASS;
+            // return TypedActionResult.pass(ItemStack.EMPTY);
         });
     }
 
     public void onUseItemCallback(PlayerEntity player, World world, Hand hand) {
         ItemStack s = player.getStackInHand(hand);
         if (s != null) {
-            this.Stats.onItemUsed(s.getTranslationKey());
-            //AIDiaryClient.LOGGER.info("onUseItemCallback);
+            // AIDiaryClient.LOGGER.info("onUseItemCallback: {}", s.getItem().getName().getString());
+            this.Stats.onItemUsed(s.getItem().getName().getString());
         }
     }
 
     public void onUseEntityCallback(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
         if (entity != null) {
-            this.Stats.onEntityUsed(entity.getType().getTranslationKey());
-            //AIDiaryClient.LOGGER.info("onUseEntityCallback e{}", entity.getType().getTranslationKey());
+            String name = entity.getType().getName().getString();
+            this.Stats.onEntityUsed(name);
+            // AIDiaryClient.LOGGER.info("onUseEntityCallback {}", name);
         }
     }
 
     public void onUseBlockCallback(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
         if ((hitResult != null) && (world != null)) {
-            String block = world.getBlockState(hitResult.getBlockPos()).getBlock().getTranslationKey();
+            String block = world.getBlockState(hitResult.getBlockPos()).getBlock().getName().getString();
             this.Stats.onBlockUsed(block);
-            //AIDiaryClient.LOGGER.info("onUseBlockCallback {}", block);
+            // AIDiaryClient.LOGGER.info("onUseBlockCallback {}", block);
         }
     }
 
     public void onPlayerBlockBreakEvents(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity entity) {
         if (state != null) {
-            String block = state.getRegistryEntry().getKey().get().getValue().getPath();
+            String block = state.getBlock().getName().getString();
             this.Stats.onBlockDestroy(block);
-            //AIDiaryClient.LOGGER.info("onPlayerBlockBreakEvents b[{}]", block);
+            // AIDiaryClient.LOGGER.info("onPlayerBlockBreakEvents b[{}]", block);
         }
     }
 
     public void onAttackEntityCallback(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
         if (entity != null) {
-            String target = entity.getType().getTranslationKey();
-            String how = player.getStackInHand(hand).getTranslationKey();
-            //AIDiaryClient.LOGGER.info("onAttackEntityCallback target[{}] how[{}]", target, how);
+            String target = entity.getType().getName().getString();
+            String how = player.getStackInHand(hand).getItem().getName().getString();
+            // AIDiaryClient.LOGGER.info("onAttackEntityCallback target[{}] how[{}]", target, how);
             this.Stats.onClientAttacked(target, how);
         }
     }
