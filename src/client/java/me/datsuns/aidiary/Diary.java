@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 
 public class Diary {
     public final Integer MaxLengthPerOneChat = 240;
+    public final String GeminiModelName = "gemini-2.5-flash";
     public GenerationState State;
     public String DiaryText;
     public String ApiKey;
@@ -187,7 +188,8 @@ public class Diary {
 
     private String issueGeminiRequest(String prompot) throws IOException {
         String reqUrl = String.format(
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=%s",
+                "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s",
+                GeminiModelName,
                 this.ApiKey
         );
         String body = buildGeminiRequestBody(prompot);
