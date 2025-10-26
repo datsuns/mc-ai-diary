@@ -49,7 +49,7 @@ public class Diary {
         for( String t : usingSplitMethod(this.DiaryText, MaxLengthPerOneChat) ) {
             String cmd = String.format("say %s", t);
             //AIDiaryClient.LOGGER.info("issue command [{}]", cmd);
-            cm.executeWithPrefix(src, cmd);
+            cm.parseAndExecute(src, cmd);
         }
         this.DiaryText = "";
         this.State = GenerationState.Idle;

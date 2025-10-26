@@ -51,17 +51,17 @@ public class Stats {
             return;
         }
         if (!this.Initialized) {
-            this.PrevPos = e.getPos();
+            this.PrevPos = e.getEntityPos();
             AIDiaryClient.LOGGER.info("set prev {}", this.PrevPos);
             this.Initialized = true;
             return;
         }
-        Vec3d cur = e.getPos();
+        Vec3d cur = e.getEntityPos();
         double prev = this.TotalDistance;
         this.TotalDistance += cur.distanceTo(this.PrevPos);
         this.PrevPos = cur;
         //AIDiaryClient.LOGGER.info("distance {}", distance());
-        RegistryEntry<Biome> b = e.getWorld().getBiome(e.getBlockPos());
+        RegistryEntry<Biome> b = e.getEntityWorld().getBiome(e.getBlockPos());
         String biom = b.getKey().get().getValue().getPath().toString();
         if (!this.VisitedBioms.contains(biom)) {
             this.VisitedBioms.add(biom);
