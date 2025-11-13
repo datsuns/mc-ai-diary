@@ -20,7 +20,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class Trigger {
-    public static final long TIME_PER_DAY = 24000;
+    public static final long TIME_PER_DAY = ModConstants.TICKS_PER_DAY;
 
     public Stats Stats;
     public Diary Diary;

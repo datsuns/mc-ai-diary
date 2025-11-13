@@ -1,14 +1,14 @@
 package me.datsuns.aidiary;
 
 import me.shedaniel.autoconfig.AutoConfig;
-import net.fabricmc.api.ClientModInitializer;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
+import net.fabricmc.api.ClientModInitializer;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import me.datsuns.aidiary.ModConstants;
 
 public class AIDiaryClient implements ClientModInitializer {
-    public static final String MOD_ID = "aidiary";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final Logger LOGGER = ModConstants.LOGGER;
     public Trigger Trigger;
     public static ModConfig ModConfig;
 

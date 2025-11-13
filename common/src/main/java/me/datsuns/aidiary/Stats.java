@@ -1,6 +1,5 @@
 package me.datsuns.aidiary;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.AttackIndicator;
@@ -52,7 +51,7 @@ public class Stats {
         }
         if (!this.Initialized) {
             this.PrevPos = e.getEntityPos();
-            AIDiaryClient.LOGGER.info("set prev {}", this.PrevPos);
+            ModConstants.LOGGER.info("set prev {}", this.PrevPos);
             this.Initialized = true;
             return;
         }
@@ -60,7 +59,7 @@ public class Stats {
         double prev = this.TotalDistance;
         this.TotalDistance += cur.distanceTo(this.PrevPos);
         this.PrevPos = cur;
-        //AIDiaryClient.LOGGER.info("distance {}", distance());
+        //ModConstants.LOGGER.info("distance {}", distance());
         RegistryEntry<Biome> b = e.getEntityWorld().getBiome(e.getBlockPos());
         String biom = b.getKey().get().getValue().getPath().toString();
         if (!this.VisitedBioms.contains(biom)) {

@@ -28,6 +28,6 @@ jobs:
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: publish
-        run: ./gradlew modrinth
+        run: ./gradlew :fabric:modrinth
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
