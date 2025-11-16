@@ -17,3 +17,7 @@ subprojects {
         maven { url "https://maven.terraformersmc.com/releases/" }
     }
 }
+
+tasks.register("modrinth") {
+    dependsOn(":fabric:modrinth", ":neoforge:modrinth")
+}
