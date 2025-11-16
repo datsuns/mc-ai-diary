@@ -1,6 +1,7 @@
 # AI日記生成mod
 
 マイクラの日記をAIで自動生成します  
+Fabric版とNeoForge版に対応しています。  
 日付が変わるとチャットに自動生成された日記がポストされます  
 生成する日記の中身はプレイ内容で変化します✌️
 
@@ -21,10 +22,12 @@
 
 ## 依存するmodのインストール
 
-以下のmodをインストールしてください
+本modはFabric版とNeoForge版があります。
 
-* [fabric](https://modrinth.com/mod/fabric-api)
-* [cloth-config](https://modrinth.com/mod/cloth-config)
+* **Fabric版**: 以下の依存modをインストールしてください
+  * [fabric](https://modrinth.com/mod/fabric-api)
+  * [cloth-config](https://modrinth.com/mod/cloth-config)
+* **NeoForge版**: 追加の依存modは不要です
 
 ## GeminiのAPIキーの取得
 
@@ -43,7 +46,7 @@
 * 本modをインストールし、一度Minecraftを起動してください
 * Minecraftの起動構成フォルダの`config`フォルダを確認します
    * ![config location](./images/config_01_location.png)
-* `aidiary.toml`というファイルがありますので、開いてください(テキストファイルです)
+* Fabric版では `config/aidiary.toml`、NeoForge版では `config/ai-diary-client.toml` が作成されますので開いてください (テキストファイルです)
   * ![the config file](./images/config_02_config_file.png)
 * `GeminiApikey = `という行の内容にAPIキーを記載してください
   * ![the config file](./images/config_03_replace_api_key.png)

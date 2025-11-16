@@ -1,5 +1,4 @@
 plugins {
-    id 'fabric-loom'
     id 'java-library'
 }
 
@@ -11,14 +10,11 @@ java {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.release = 21
+    it.options.encoding = 'UTF-8'
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    compileOnly "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    implementation 'com.google.code.gson:gson:2.10.1'
-    compileOnly 'org.apache.httpcomponents:httpclient:4.5.14'
-    compileOnly 'org.slf4j:slf4j-api:2.0.12'
+    api 'com.google.code.gson:gson:2.10.1'
+    api 'org.apache.httpcomponents:httpclient:4.5.14'
+    api 'org.slf4j:slf4j-api:2.0.12'
 }

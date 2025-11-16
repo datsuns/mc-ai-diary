@@ -6,6 +6,7 @@
 [日本語の説明はこちら](./README.ja.md)
 
 Automatic Diary Generator by Gemini AI.  
+Supports both Fabric and NeoForge.  
 Generated Diary will be posted as chat.  
 Diary text depends on your playing✌️
 
@@ -24,10 +25,12 @@ You need 3 steps to use this mod.
 
 ## Install dependency
 
-please install followings:
+This mod ships builds for Fabric and NeoForge.
 
-* [fabric](https://modrinth.com/mod/fabric-api)
-* [cloth-config](https://modrinth.com/mod/cloth-config)
+* **Fabric**: install the following dependencies
+  * [fabric API](https://modrinth.com/mod/fabric-api)
+  * [cloth-config](https://modrinth.com/mod/cloth-config)
+* **NeoForge**: no additional runtime dependencies are required.
 
 ## Generate Gemini API key
 
@@ -46,7 +49,8 @@ please install followings:
 * Install this mod, and once start Minecraft.
 * Open environment folder of Minecraft, and open `config` folder.
    * ![config location](./images/config_01_location.png)
-* Check `aidiary.toml` file exists. Open it. (this file is Text file.)
+* If you are using Fabric check `config/aidiary.toml`. NeoForge uses `config/ai-diary-client.toml`.
+  Open the file (it is a text file).
   * ![the config file](./images/config_02_config_file.png)
 * Set API key into the line start as `GeminiApikey = `
   * ![the config file](./images/config_03_replace_api_key.png)

@@ -10,4 +10,4 @@ pluginManagement {
 }
 
 rootProject.name = "mc-ai-diary"
-include("common", "fabric")
+include("common", "fabric", "neoforge")

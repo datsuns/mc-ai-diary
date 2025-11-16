@@ -1,136 +1,172 @@
 package me.datsuns.aidiary;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.option.AttackIndicator;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.biome.Biome;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-
-// ネタ帳
-// [ ]通ったバイオーム
-// [ ]mobとのかかわり
-// [ ]置いたブロック数
-// [ ]その日の天気
-// 昔話風
+import java.util.Set;
 
 public class Stats {
-    public Vec3d PrevPos;
-    public double TotalDistance;
-    public Boolean Initialized; // need better implementation.
-    public HashMap<String, HashMap<String, Integer>> Attacked;
-    public ArrayList<String> Weather;
-    public ArrayList<String> VisitedBioms;
-    public HashMap<String, Integer> UsedItem;
-    public HashMap<String, Integer> UsedBlock;
-    public HashMap<String, Integer> DestroyBlock;
-    public HashMap<String, Integer> UsedEntity;
+    private double totalDistance;
+    private final Map<String, Map<String, Integer>> attacked;
+    private final Set<String> visitedBiomes;
+    private final List<String> weather;
+    private final Map<String, Integer> usedItem;
+    private final Map<String, Integer> usedBlock;
+    private final Map<String, Integer> destroyBlock;
+    private final Map<String, Integer> usedEntity;
 
-    Stats() {
-        this.PrevPos = new Vec3d(0.0, 0.0, 0.0);
-        this.TotalDistance = 0.0F;
-        this.Initialized = false;
-        Map m = new HashMap<String, Integer>();
-        this.Attacked = new HashMap<String, HashMap<String, Integer>>();
-        this.VisitedBioms = new ArrayList<String>();
-        this.Weather = new ArrayList<String>();
-        this.UsedItem = new HashMap<String, Integer>();
-        this.UsedBlock = new HashMap<String, Integer>();
-        this.DestroyBlock = new HashMap<String, Integer>();
-        this.UsedEntity = new HashMap<String, Integer>();
+    public Stats() {
+        this.totalDistance = 0.0D;
+        this.attacked = new HashMap<>();
+        this.visitedBiomes = new LinkedHashSet<>();
+        this.weather = new ArrayList<>();
+        this.usedItem = new HashMap<>();
+        this.usedBlock = new HashMap<>();
+        this.destroyBlock = new HashMap<>();
+        this.usedEntity = new HashMap<>();
     }
 
-    void onClientTick(MinecraftClient client) {
-        ClientPlayerEntity e = client.player;
-        if (e == null) {
+    public void addDistance(double delta) {
+        this.totalDistance += delta;
+    }
+
+    public void addVisitedBiome(String biome) {
+        if (biome != null && !biome.isEmpty()) {
+            this.visitedBiomes.add(biome);
+        }
+    }
+
+    public void addWeather(String weatherDescription) {
+        if (weatherDescription != null && !weatherDescription.isEmpty()) {
+            this.weather.add(weatherDescription);
+        }
+    }
+
+    public void onClientAttacked(String target, String how) {
+        if (target == null || how == null) {
             return;
         }
-        if (!this.Initialized) {
-            this.PrevPos = e.getEntityPos();
-            ModConstants.LOGGER.info("set prev {}", this.PrevPos);
-            this.Initialized = true;
+        Map<String, Integer> byMethod = this.attacked.computeIfAbsent(target, key -> new HashMap<>());
+        byMethod.merge(how, 1, Integer::sum);
+    }
+
+    public void onItemUsed(String item) {
+        recordCount(this.usedItem, item);
+    }
+
+    public void onEntityUsed(String entity) {
+        recordCount(this.usedEntity, entity);
+    }
+
+    public void onBlockUsed(String block) {
+        recordCount(this.usedBlock, block);
+    }
+
+    public void onBlockDestroy(String block) {
+        recordCount(this.destroyBlock, block);
+    }
+
+    private void recordCount(Map<String, Integer> map, String key) {
+        if (key == null || key.isEmpty()) {
             return;
         }
-        Vec3d cur = e.getEntityPos();
-        double prev = this.TotalDistance;
-        this.TotalDistance += cur.distanceTo(this.PrevPos);
-        this.PrevPos = cur;
-        //ModConstants.LOGGER.info("distance {}", distance());
-        RegistryEntry<Biome> b = e.getEntityWorld().getBiome(e.getBlockPos());
-        String biom = b.getKey().get().getValue().getPath().toString();
-        if (!this.VisitedBioms.contains(biom)) {
-            this.VisitedBioms.add(biom);
-        }
+        map.merge(key, 1, Integer::sum);
     }
 
-    void onClientAttacked(String target, String how) {
-        Map<String, Integer> m = this.Attacked.get(target);
-        if (m != null) {
-            if (m.containsKey(how)) {
-                Integer next = m.get(how).intValue() + 1;
-                m.put(how, next);
-            } else {
-                m.put(how, 1);
-            }
-        } else {
-            HashMap<String, Integer> newEntry = new HashMap<String, Integer>();
-            newEntry.put(how, 1);
-            this.Attacked.put(target, newEntry);
+    public Snapshot snapshot() {
+        Map<String, Map<String, Integer>> attackedCopy = new HashMap<>();
+        for (Map.Entry<String, Map<String, Integer>> entry : this.attacked.entrySet()) {
+            attackedCopy.put(entry.getKey(), new HashMap<>(entry.getValue()));
         }
-    }
-
-    void onItemUsed(String item) {
-        Integer cur = this.UsedItem.get(item);
-        if (cur == null) {
-            this.UsedItem.put(item, 1);
-        } else {
-            this.UsedItem.put(item, cur + 1);
-        }
-    }
-
-    void onEntityUsed(String entity) {
-        Integer cur = this.UsedEntity.get(entity);
-        if (cur == null) {
-            this.UsedEntity.put(entity, 1);
-        } else {
-            this.UsedEntity.put(entity, cur + 1);
-        }
-    }
-
-    void onBlockUsed(String block) {
-        Integer cur = this.UsedBlock.get(block);
-        if (cur == null) {
-            this.UsedBlock.put(block, 1);
-        } else {
-            this.UsedBlock.put(block, cur + 1);
-        }
-    }
-
-    void onBlockDestroy(String block) {
-        Integer cur = this.DestroyBlock.get(block);
-        if (cur == null) {
-            this.DestroyBlock.put(block, 1);
-        } else {
-            this.DestroyBlock.put(block, cur + 1);
-        }
+        return new Snapshot(
+                this.totalDistance,
+                attackedCopy,
+                new ArrayList<>(this.weather),
+                new ArrayList<>(this.visitedBiomes),
+                new HashMap<>(this.usedItem),
+                new HashMap<>(this.usedBlock),
+                new HashMap<>(this.destroyBlock),
+                new HashMap<>(this.usedEntity)
+        );
     }
 
     public void reset() {
-        this.TotalDistance = 0.0F;
-        this.Attacked.clear();
-        this.Weather.clear();
-        this.VisitedBioms.clear();
-        this.UsedItem.clear();
-        this.UsedBlock.clear();
-        this.DestroyBlock.clear();
-        this.UsedEntity.clear();
+        this.totalDistance = 0.0D;
+        this.attacked.clear();
+        this.weather.clear();
+        this.visitedBiomes.clear();
+        this.usedItem.clear();
+        this.usedBlock.clear();
+        this.destroyBlock.clear();
+        this.usedEntity.clear();
     }
 
-    public double distance() {
-        return this.TotalDistance;
+    public static final class Snapshot {
+        private final double totalDistance;
+        private final Map<String, Map<String, Integer>> attacked;
+        private final List<String> weather;
+        private final List<String> visitedBiomes;
+        private final Map<String, Integer> usedItem;
+        private final Map<String, Integer> usedBlock;
+        private final Map<String, Integer> destroyBlock;
+        private final Map<String, Integer> usedEntity;
+
+        private Snapshot(double totalDistance,
+                          Map<String, Map<String, Integer>> attacked,
+                          List<String> weather,
+                          List<String> visitedBiomes,
+                          Map<String, Integer> usedItem,
+                          Map<String, Integer> usedBlock,
+                          Map<String, Integer> destroyBlock,
+                          Map<String, Integer> usedEntity) {
+            this.totalDistance = totalDistance;
+            this.attacked = attacked;
+            this.weather = weather;
+            this.visitedBiomes = visitedBiomes;
+            this.usedItem = usedItem;
+            this.usedBlock = usedBlock;
+            this.destroyBlock = destroyBlock;
+            this.usedEntity = usedEntity;
+        }
+
+        public double totalDistance() {
+            return totalDistance;
+        }
+
+        public Map<String, Map<String, Integer>> attacked() {
+            return attacked;
+        }
+
+        public List<String> weather() {
+            return weather;
+        }
+
+        public List<String> visitedBiomes() {
+            return visitedBiomes;
+        }
+
+        public Map<String, Integer> usedItem() {
+            return usedItem;
+        }
+
+        public Map<String, Integer> usedBlock() {
+            return usedBlock;
+        }
+
+        public Map<String, Integer> destroyBlock() {
+            return destroyBlock;
+        }
+
+        public Map<String, Integer> usedEntity() {
+            return usedEntity;
+        }
+
+        public boolean isEmpty() {
+            return attacked.isEmpty() && visitedBiomes.isEmpty() && usedItem.isEmpty()
+                    && usedBlock.isEmpty() && destroyBlock.isEmpty() && usedEntity.isEmpty()
+                    && totalDistance <= 0.0D && weather.isEmpty();
+        }
     }
 }

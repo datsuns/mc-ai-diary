@@ -1,167 +1,181 @@
 package me.datsuns.aidiary;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.event.player.*;
-import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.biome.Biome;
+
+import java.util.concurrent.CompletableFuture;
 
 public class Trigger {
-    public static final long TIME_PER_DAY = ModConstants.TICKS_PER_DAY;
+    private final Stats stats;
+    private final DiaryGenerator diaryGenerator;
+    private long currentDay;
+    private boolean hasPreviousPosition;
+    private Vec3d previousPosition;
+    private CompletableFuture<String> pendingDiary;
 
-    public Stats Stats;
-    public Diary Diary;
-    public long CurrentDay;
-
-    // いずれはInterfaceの配列にでも
-    Trigger(Stats s, Diary d) {
-        this.Stats = s;
-        this.Diary = d;
-        this.CurrentDay = -1;
+    Trigger(Stats stats, DiaryGenerator diaryGenerator) {
+        this.stats = stats;
+        this.diaryGenerator = diaryGenerator;
+        this.currentDay = -1;
+        this.previousPosition = Vec3d.ZERO;
         registerCallback();
     }
 
-    public void registerCallback() {
+    private void registerCallback() {
         ClientTickEvents.END_CLIENT_TICK.register(this::onClientTick);
 
-        // memo) ClientPickBlockApplyCallback may replace to PlayerPickItemEvents.BLOCK.register
-        // ClientPickBlockApplyCallback.EVENT.register((player, result, stack) -> {
-        //    onClientPickBlockApply(player, result, stack);
-        //    return stack;
-        //});
-
-        // memo) ClientPickBlockGatherCallback may replace to PlayerPickItemEvents.BLOCK.register
-        //ClientPickBlockGatherCallback.EVENT.register((player, result) -> {
-        //    onClientPickBlockGather(player, result);
-        //    return null;
-        //});
-        //EntityTrackingEvents.START_TRACKING.register((trackedEntity, player) -> {
-        //    onEntityTrackingEventsStart(trackedEntity, player);
-        //});
-        //EntityTrackingEvents.STOP_TRACKING.register((trackedEntity, player) -> {
-        //    onEntityTrackingEventsStop(trackedEntity, player);
-        //});
-        //AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
-        //    onAttackBlockCallback(player, world, hand, pos, direction);
-        //    return ActionResult.PASS;
-        //});
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            onAttackEntityCallback(player, world, hand, entity, hitResult);
+            if (entity != null) {
+                String target = entity.getType().getName().getString();
+                String how = player.getStackInHand(hand).getItem().getName().getString();
+                this.stats.onClientAttacked(target, how);
+            }
             return ActionResult.PASS;
         });
-        PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, entity) -> {
-            onPlayerBlockBreakEvents(world, player, pos, state, entity);
-        });
+
+        PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, entity) -> onPlayerBlockBreak(state));
+
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            onUseBlockCallback(player, world, hand, hitResult);
+            if (hitResult != null && world != null) {
+                String block = world.getBlockState(hitResult.getBlockPos()).getBlock().getName().getString();
+                this.stats.onBlockUsed(block);
+            }
             return ActionResult.PASS;
         });
+
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            onUseEntityCallback(player, world, hand, entity, hitResult);
+            if (entity != null) {
+                this.stats.onEntityUsed(entity.getType().getName().getString());
+            }
             return ActionResult.PASS;
         });
+
         UseItemCallback.EVENT.register((player, world, hand) -> {
-            onUseItemCallback(player, world, hand);
+            if (player != null) {
+                ItemStack stack = player.getStackInHand(hand);
+                if (stack != null && !stack.isEmpty()) {
+                    this.stats.onItemUsed(stack.getItem().getName().getString());
+                }
+            }
             return ActionResult.PASS;
-            // return TypedActionResult.pass(ItemStack.EMPTY);
         });
     }
 
-    public void onUseItemCallback(PlayerEntity player, World world, Hand hand) {
-        ItemStack s = player.getStackInHand(hand);
-        if (s != null) {
-            // AIDiaryClient.LOGGER.info("onUseItemCallback: {}", s.getItem().getName().getString());
-            this.Stats.onItemUsed(s.getItem().getName().getString());
-        }
-    }
-
-    public void onUseEntityCallback(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        if (entity != null) {
-            String name = entity.getType().getName().getString();
-            this.Stats.onEntityUsed(name);
-            // AIDiaryClient.LOGGER.info("onUseEntityCallback {}", name);
-        }
-    }
-
-    public void onUseBlockCallback(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
-        if ((hitResult != null) && (world != null)) {
-            String block = world.getBlockState(hitResult.getBlockPos()).getBlock().getName().getString();
-            this.Stats.onBlockUsed(block);
-            // AIDiaryClient.LOGGER.info("onUseBlockCallback {}", block);
-        }
-    }
-
-    public void onPlayerBlockBreakEvents(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity entity) {
+    private void onPlayerBlockBreak(BlockState state) {
         if (state != null) {
             String block = state.getBlock().getName().getString();
-            this.Stats.onBlockDestroy(block);
-            // AIDiaryClient.LOGGER.info("onPlayerBlockBreakEvents b[{}]", block);
+            this.stats.onBlockDestroy(block);
         }
     }
 
-    public void onAttackEntityCallback(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        if (entity != null) {
-            String target = entity.getType().getName().getString();
-            String how = player.getStackInHand(hand).getItem().getName().getString();
-            // AIDiaryClient.LOGGER.info("onAttackEntityCallback target[{}] how[{}]", target, how);
-            this.Stats.onClientAttacked(target, how);
-        }
-    }
-
-    // TODO 攻撃対象の計上
-    // TODO 攻撃方法の計上
-    public void onAttackBlockCallback(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction) {
-        AIDiaryClient.LOGGER.info("onAttackBlockCallback {}", hand.name());
-    }
-
-    // 近辺のmobに反応してそうだが視界の外にも反応してそう
-    public void onEntityTrackingEventsStop(Entity trackedEntity, ServerPlayerEntity player) {
-        AIDiaryClient.LOGGER.info("onEntityTrackingEventsStop {}", trackedEntity.getDisplayName().getString());
-    }
-
-    public void onEntityTrackingEventsStart(Entity trackedEntity, ServerPlayerEntity player) {
-        AIDiaryClient.LOGGER.info("onEntityTrackingEventsStart {}", trackedEntity.getDisplayName().getString());
-    }
-
-    // よくわからん
-    public void onClientPickBlockGather(PlayerEntity player, HitResult result) {
-        AIDiaryClient.LOGGER.info("onClientPickBlockGather");
-    }
-
-    // よくわからん
-    public void onClientPickBlockApply(PlayerEntity player, HitResult result, ItemStack stack) {
-        AIDiaryClient.LOGGER.info("onClientPickBlockApply");
-    }
-
-    public void onClientTick(MinecraftClient client) {
+    private void onClientTick(MinecraftClient client) {
         if (client == null || client.world == null) {
             return;
         }
-        long tod = client.world.getTimeOfDay();
-        long days = tod / TIME_PER_DAY;
-        if (this.CurrentDay == -1) {
-            this.CurrentDay = days;
+        ClientPlayerEntity player = client.player;
+        if (player == null) {
             return;
         }
-        if (days != this.CurrentDay) {
-            this.CurrentDay = days;
-            this.Diary.onSave(client, this.Stats);
-            this.Stats.reset();
+        trackMovement(player);
+        trackBiome(player);
+
+        long days = client.world.getTimeOfDay() / ModConstants.TICKS_PER_DAY;
+        if (this.currentDay == -1) {
+            this.currentDay = days;
+            return;
         }
-        this.Stats.onClientTick(client);
-        this.Diary.onClientTick(client);
+        if (days != this.currentDay) {
+            this.currentDay = days;
+            Stats.Snapshot snapshot = this.stats.snapshot();
+            this.stats.reset();
+            triggerDiaryGeneration(client, days, snapshot);
+        }
+    }
+
+    private void trackMovement(ClientPlayerEntity player) {
+        Vec3d current = player.getEntityPos();
+        if (!this.hasPreviousPosition) {
+            this.previousPosition = current;
+            this.hasPreviousPosition = true;
+            return;
+        }
+        this.stats.addDistance(current.distanceTo(this.previousPosition));
+        this.previousPosition = current;
+    }
+
+    private void trackBiome(ClientPlayerEntity player) {
+        RegistryEntry<Biome> biomeEntry = player.getEntityWorld().getBiome(player.getBlockPos());
+        String biomeId = biomeEntry.getKey().map(key -> key.getValue().getPath()).orElse("unknown");
+        this.stats.addVisitedBiome(biomeId);
+    }
+
+    private void triggerDiaryGeneration(MinecraftClient client, long day, Stats.Snapshot snapshot) {
+        if (!this.diaryGenerator.hasApiKey()) {
+            AIDiaryClient.LOGGER.error("Gemini API key is not set");
+            return;
+        }
+        if (this.pendingDiary != null && !this.pendingDiary.isDone()) {
+            AIDiaryClient.LOGGER.warn("Diary generation already running, skipping day {}", day);
+            return;
+        }
+        String languageLabel = Text.translatable("diary.text.language").getString();
+        this.pendingDiary = this.diaryGenerator.requestDiary(day, snapshot, languageLabel);
+        this.pendingDiary.whenComplete((text, throwable) -> {
+            if (throwable != null) {
+                client.execute(() -> {
+                    this.pendingDiary = null;
+                    notifyFailure(client, throwable.getCause() != null ? throwable.getCause().getMessage() : throwable.getMessage());
+                });
+                return;
+            }
+            client.execute(() -> {
+                this.pendingDiary = null;
+                deliverDiary(client, text);
+            });
+        });
+    }
+
+    private void deliverDiary(MinecraftClient client, String diaryText) {
+        if (diaryText == null || diaryText.isEmpty()) {
+            return;
+        }
+        IntegratedServer server = client.getServer();
+        if (server == null) {
+            AIDiaryClient.LOGGER.error("Cannot deliver diary because client server is null");
+            return;
+        }
+        ServerCommandSource source = server.getCommandSource();
+        CommandManager commandManager = server.getCommandManager();
+        for (String chunk : this.diaryGenerator.chunkForChat(diaryText)) {
+            String cmd = "say " + chunk;
+            commandManager.parseAndExecute(source, cmd);
+        }
+    }
+
+    private void notifyFailure(MinecraftClient client, String reason) {
+        if (client.player == null) {
+            return;
+        }
+        String message = reason == null ? "Gemini request failed." : reason;
+        client.player.sendMessage(Text.literal("[AI Diary] " + message), false);
     }
 }

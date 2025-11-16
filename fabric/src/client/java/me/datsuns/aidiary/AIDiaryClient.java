@@ -19,7 +19,7 @@ public class AIDiaryClient implements ClientModInitializer {
 
         this.Trigger = new Trigger(
                 new Stats(),
-                new Diary(this.ModConfig.GeminiApikey)
+                new DiaryGenerator(this.ModConfig.GeminiApikey)
         );
     }
 }
