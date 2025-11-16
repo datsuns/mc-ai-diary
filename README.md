@@ -1,29 +1,28 @@
-# AI Diary Mod
+# [日本語の説明はこちら](./README.ja.md)
+
+## AI Diary Mod
 
 [![Automatic Build](https://github.com/datsuns/mc-ai-diary/actions/workflows/build.yml/badge.svg)](https://github.com/datsuns/mc-ai-diary/actions/workflows/build.yml)
 [![Modrinth downloads](https://img.shields.io/modrinth/dt/NBv764f5?logo=modrinth&label=Modrinth&color=2200FF)](https://modrinth.com/mod/ai-diary)
 
-[日本語の説明はこちら](./README.ja.md)
-
-Automatic Diary Generator by Gemini AI.  
-Supports both Fabric and NeoForge.  
-Generated Diary will be posted as chat.  
-Diary text depends on your playing✌️
+Automatic Diary Generator by Gemini AI. Supports both Fabric and NeoForge.  
+Generated Diary will be posted as chat. Diary text depends on your playing✌️
 
 ![Play Screen](./images/screenshot.png)
 
-# Download
+## Download
 
 please download published .jar from [Modrinth ai-diary](https://modrinth.com/mod/ai-diary/versions#all-versions)
 
-# Setup
+## Setup
 
-You need 3 steps to use this mod. 
-+ Install dependency
-+ Generate Gemini API key
-+ Set API key to this mod
+You need 3 steps to use this mod.
 
-## Install dependency
+1. Install dependency
+1. Generate Gemini API key
+1. Set API key to this mod
+
+### Install dependency
 
 This mod ships builds for Fabric and NeoForge.
 
@@ -32,7 +31,7 @@ This mod ships builds for Fabric and NeoForge.
   * [cloth-config](https://modrinth.com/mod/cloth-config)
 * **NeoForge**: no additional runtime dependencies are required.
 
-## Generate Gemini API key
+### Generate Gemini API key
 
 * prepare your Google account
 * Access to [Google AI Studio](https://aistudio.google.com/)
@@ -44,20 +43,20 @@ This mod ships builds for Fabric and NeoForge.
   * ![save API Key](./images/setup_03_copy_api_key.png)
   * **NOTE:** Don't share this API key to ANYONE.
 
-## Set API key to this mod
+### Set API key to this mod
 
 * Install this mod, and once start Minecraft.
 * Open environment folder of Minecraft, and open `config` folder.
-   * ![config location](./images/config_01_location.png)
+  * ![config location](./images/config_01_location.png)
 * Check `config/aidiary.toml` (this file is created for both Fabric and NeoForge).
   Open the file (it is a text file).
   * ![the config file](./images/config_02_config_file.png)
-* Set API key into the line start as `GeminiApikey = `
+* Set API key into the line start as `GeminiApikey = ""`
   * ![the config file](./images/config_03_replace_api_key.png)
 * Restart Minecraft
   * **NOTE:** This configuration will be applyed after RESTARTED
 
-# Note
+## Note
 
 * This mod relies on the Gemini API being available for free.  
   so, this mod may stop working if the API becomes paid.
