@@ -141,4 +141,6 @@ jar {
 
     from(commonMain.output)
     dependsOn(commonProject.tasks.named("classes"))
+
+    archiveFileName = "ai-diary-${project.mod_version}-neoforge.jar"
 }

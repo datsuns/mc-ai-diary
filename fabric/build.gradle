@@ -86,6 +86,16 @@ jar {
     dependsOn(commonProject.tasks.named("classes"))
 }
 
+tasks.register("fabricJarName") // placeholder to keep block structure? not needed
+
+tasks.named("remapJar") {
+    archiveFileName = "ai-diary-${project.mod_version}-fabric.jar"
+}
+
+tasks.named("remapSourcesJar") {
+    archiveFileName = "ai-diary-${project.mod_version}-fabric-sources.jar"
+}
+
 // configure the maven publication
 publishing {
     publications {
