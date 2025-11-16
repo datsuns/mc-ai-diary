@@ -46,7 +46,7 @@ Fabric版とNeoForge版に対応しています。
 * 本modをインストールし、一度Minecraftを起動してください
 * Minecraftの起動構成フォルダの`config`フォルダを確認します
    * ![config location](./images/config_01_location.png)
-* Fabric版では `config/aidiary.toml`、NeoForge版では `config/ai-diary-client.toml` が作成されますので開いてください (テキストファイルです)
+* Fabric/NeoForgeともに `config/aidiary.toml` が作成されますので開いてください (テキストファイルです)
   * ![the config file](./images/config_02_config_file.png)
 * `GeminiApikey = `という行の内容にAPIキーを記載してください
   * ![the config file](./images/config_03_replace_api_key.png)

@@ -49,7 +49,7 @@ This mod ships builds for Fabric and NeoForge.
 * Install this mod, and once start Minecraft.
 * Open environment folder of Minecraft, and open `config` folder.
    * ![config location](./images/config_01_location.png)
-* If you are using Fabric check `config/aidiary.toml`. NeoForge uses `config/ai-diary-client.toml`.
+* Check `config/aidiary.toml` (this file is created for both Fabric and NeoForge).
   Open the file (it is a text file).
   * ![the config file](./images/config_02_config_file.png)
 * Set API key into the line start as `GeminiApikey = `

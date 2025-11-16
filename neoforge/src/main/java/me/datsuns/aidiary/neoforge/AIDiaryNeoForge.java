@@ -12,7 +12,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 public class AIDiaryNeoForge {
 
     public AIDiaryNeoForge(IEventBus modEventBus, ModContainer modContainer) {
-        modContainer.registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.CLIENT_SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.CLIENT_SPEC, "aidiary.toml");
         modEventBus.addListener(this::onClientSetup);
         modEventBus.addListener(this::onConfigReload);
     }
