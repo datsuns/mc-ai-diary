@@ -150,7 +150,7 @@ jar {
 modrinth {
     token = System.getenv('MODRINTH_TOKEN')
     projectId = "${project.modrinth_project_id}"
-    versionNumber = "v${project.mod_version}-NeoForge"
+    versionNumber = "v${project.mod_version}-NeoForge Minecraft v${project.minecraft_version}"
     versionName = "v${project.mod_version}-mc${project.minecraft_version}-neoforge"
     uploadFile = jar
     additionalFiles = [project(":common").tasks.named("jar")]

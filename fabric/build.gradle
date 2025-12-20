@@ -115,7 +115,7 @@ import com.modrinth.minotaur.dependencies.ModDependency
 modrinth {
     token = System.getenv('MODRINTH_TOKEN')
     projectId = "${project.modrinth_project_id}"
-    versionNumber = "v${project.mod_version}-Fabric"
+    versionNumber = "v${project.mod_version}-Fabric Minecraft v${project.minecraft_version}"
     versionName = "v${project.mod_version}-mc${project.minecraft_version}-fabric"
     uploadFile = remapJar
     gameVersions = ['1.21.11']
