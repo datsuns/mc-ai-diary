@@ -5,7 +5,7 @@ import com.modrinth.minotaur.dependencies.ModDependency
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.116'
+    id 'net.neoforged.moddev' version '2.0.123'
     id 'idea'
     id "com.modrinth.minotaur"
 }
@@ -154,7 +154,7 @@ modrinth {
     versionName = "v${project.mod_version}-mc${project.minecraft_version}-neoforge"
     uploadFile = jar
     additionalFiles = [project(":common").tasks.named("jar")]
-    gameVersions = ['1.21.10']
+    gameVersions = ['1.21.11']
     loaders = ['neoforge']
     dependencies = []
 }

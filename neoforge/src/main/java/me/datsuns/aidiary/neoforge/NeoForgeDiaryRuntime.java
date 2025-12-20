@@ -8,7 +8,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -85,7 +85,7 @@ public final class NeoForgeDiaryRuntime {
     }
 
     private void trackBiome(LocalPlayer player) {
-        Optional<ResourceLocation> biomeId = player.level().getBiome(player.blockPosition()).unwrapKey().map(key -> key.location());
+        Optional<Identifier> biomeId = player.level().getBiome(player.blockPosition()).unwrapKey().map(key -> key.identifier());
         biomeId.ifPresent(id -> this.stats.addVisitedBiome(id.getPath()));
     }
 
