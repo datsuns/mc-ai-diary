@@ -14,6 +14,7 @@ public class AIDiaryClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        LOGGER.info("Initializing AI Diary client...");
         AutoConfig.register(ModConfig.class, Toml4jConfigSerializer::new);
         this.ModConfig = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 

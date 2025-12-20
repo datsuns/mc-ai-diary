@@ -3,18 +3,14 @@ package me.datsuns.aidiary;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -228,17 +224,23 @@ public class DiaryGenerator {
                 this.apiKey
         );
         String body = buildGeminiRequestBody(prompt);
-        HttpClient client = HttpClientBuilder.create().build();
-        StringEntity input = new StringEntity(body, StandardCharsets.UTF_8);
-        input.setContentType("application/json; charset=UTF-8");
-        HttpPost post = new HttpPost(reqUrl);
-        post.setHeader("Content-Type", "application/json; charset=UTF-8");
-        post.setEntity(input);
+        try {
+            HttpClient client = HttpClient.newBuilder().build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(reqUrl))
+                    .header("Content-Type", "application/json; charset=UTF-8")
+                    .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                    .build();
 
-        HttpResponse response = client.execute(post);
-        HttpEntity httpEntity = response.getEntity();
-        try (InputStream in = httpEntity.getContent()) {
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                return response.body();
+            } else {
+                throw new IOException("Gemini request failed with status code: " + response.statusCode() + ", body: " + response.body());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Gemini request interrupted", e);
         }
     }
 
