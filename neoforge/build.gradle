@@ -155,5 +155,7 @@ modrinth {
     uploadFile = jar
     gameVersions = ['1.21.11']
     loaders = ['neoforge']
-    dependencies = []
+    dependencies = [
+            new ModDependency('9s6osm5g', 'required'),
+    ]
 }
