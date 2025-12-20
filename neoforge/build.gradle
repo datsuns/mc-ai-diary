@@ -153,7 +153,6 @@ modrinth {
     versionNumber = "v${project.mod_version}-NeoForge"
     versionName = "v${project.mod_version}-mc${project.minecraft_version}-neoforge"
     uploadFile = jar
-    additionalFiles = [project(":common").tasks.named("jar")]
     gameVersions = ['1.21.11']
     loaders = ['neoforge']
     dependencies = []
