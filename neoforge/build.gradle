@@ -140,7 +140,7 @@ jar {
     from(commonMain.output)
     dependsOn(commonProject.tasks.named("classes"))
 
-    archiveFileName = "ai-diary-${project.mod_version}-neoforge.jar"
+    archiveFileName = "ai-diary-${project.mod_version}-neoforge-mc${project.minecraft_version}.jar"
 }
 
 modrinth {

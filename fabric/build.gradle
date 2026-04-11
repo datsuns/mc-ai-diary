@@ -74,7 +74,7 @@ java {
 }
 
 sourcesJar {
-    archiveFileName = "ai-diary-${project.mod_version}-fabric-sources.jar"
+    archiveFileName = "ai-diary-${project.mod_version}-fabric-mc${project.minecraft_version}-sources.jar"
 }
 
 jar {
@@ -88,7 +88,7 @@ jar {
     from(commonMain.output)
     dependsOn(commonProject.tasks.named("classes"))
 
-    archiveFileName = "ai-diary-${project.mod_version}-fabric.jar"
+    archiveFileName = "ai-diary-${project.mod_version}-fabric-mc${project.minecraft_version}.jar"
 }
 
 // tasks.register("fabricJarName") // removed
