@@ -5,7 +5,7 @@ import com.modrinth.minotaur.dependencies.ModDependency
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.123'
+    id 'net.neoforged.moddev' version '2.0.141'
     id 'idea'
     id "com.modrinth.minotaur"
 }
@@ -27,7 +27,7 @@ base {
     archivesName = project.archives_base_name
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 sourceSets {
     main {
@@ -36,12 +36,8 @@ sourceSets {
 }
 
 neoForge {
+    // Specify the version of NeoForge to use.
     version = project.neo_version
-
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
 
     runs {
         client {
@@ -153,7 +149,7 @@ modrinth {
     versionNumber = "v${project.mod_version}-NeoForge"
     versionName = "v${project.mod_version}-mc${project.minecraft_version}-neoforge"
     uploadFile = jar
-    gameVersions = ['1.21.11']
+    gameVersions = ['26.1.1']
     loaders = ['neoforge']
     dependencies = [
             new ModDependency('9s6osm5g', 'required'),

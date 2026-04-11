@@ -6,21 +6,21 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Holder;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.biome.Biome;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -29,14 +29,14 @@ public class Trigger {
     private final DiaryGenerator diaryGenerator;
     private long currentDay;
     private boolean hasPreviousPosition;
-    private Vec3d previousPosition;
+    private Vec3 previousPosition;
     private CompletableFuture<String> pendingDiary;
 
     Trigger(Stats stats, DiaryGenerator diaryGenerator) {
         this.stats = stats;
         this.diaryGenerator = diaryGenerator;
         this.currentDay = -1;
-        this.previousPosition = Vec3d.ZERO;
+        this.previousPosition = Vec3.ZERO;
         registerCallback();
     }
 
@@ -45,11 +45,11 @@ public class Trigger {
 
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (entity != null) {
-                String target = entity.getType().getName().getString();
-                String how = player.getStackInHand(hand).getItem().getName().getString();
+                String target = entity.getType().getDescription().getString();
+                String how = player.getItemInHand(hand).getHoverName().getString();
                 this.stats.onClientAttacked(target, how);
             }
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         });
 
         PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, entity) -> onPlayerBlockBreak(state));
@@ -59,24 +59,24 @@ public class Trigger {
                 String block = world.getBlockState(hitResult.getBlockPos()).getBlock().getName().getString();
                 this.stats.onBlockUsed(block);
             }
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         });
 
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (entity != null) {
-                this.stats.onEntityUsed(entity.getType().getName().getString());
+                this.stats.onEntityUsed(entity.getType().getDescription().getString());
             }
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         });
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
             if (player != null) {
-                ItemStack stack = player.getStackInHand(hand);
+                ItemStack stack = player.getItemInHand(hand);
                 if (stack != null && !stack.isEmpty()) {
-                    this.stats.onItemUsed(stack.getItem().getName().getString());
+                    this.stats.onItemUsed(stack.getHoverName().getString());
                 }
             }
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         });
     }
 
@@ -87,18 +87,18 @@ public class Trigger {
         }
     }
 
-    private void onClientTick(MinecraftClient client) {
-        if (client == null || client.world == null) {
+    private void onClientTick(Minecraft client) {
+        if (client == null || client.level == null) {
             return;
         }
-        ClientPlayerEntity player = client.player;
+        LocalPlayer player = client.player;
         if (player == null) {
             return;
         }
         trackMovement(player);
         trackBiome(player);
 
-        long days = client.world.getTimeOfDay() / ModConstants.TICKS_PER_DAY;
+        long days = client.level.getOverworldClockTime() / ModConstants.TICKS_PER_DAY;
         if (this.currentDay == -1) {
             this.currentDay = days;
             return;
@@ -111,8 +111,8 @@ public class Trigger {
         }
     }
 
-    private void trackMovement(ClientPlayerEntity player) {
-        Vec3d current = player.getEntityPos();
+    private void trackMovement(LocalPlayer player) {
+        Vec3 current = player.position();
         if (!this.hasPreviousPosition) {
             this.previousPosition = current;
             this.hasPreviousPosition = true;
@@ -122,13 +122,13 @@ public class Trigger {
         this.previousPosition = current;
     }
 
-    private void trackBiome(ClientPlayerEntity player) {
-        RegistryEntry<Biome> biomeEntry = player.getEntityWorld().getBiome(player.getBlockPos());
-        String biomeId = biomeEntry.getKey().map(key -> key.getValue().getPath()).orElse("unknown");
+    private void trackBiome(LocalPlayer player) {
+        Holder<Biome> biomeEntry = player.level().getBiome(player.blockPosition());
+        String biomeId = biomeEntry.unwrapKey().map(Object::toString).orElse("unknown");
         this.stats.addVisitedBiome(biomeId);
     }
 
-    private void triggerDiaryGeneration(MinecraftClient client, long day, Stats.Snapshot snapshot) {
+    private void triggerDiaryGeneration(Minecraft client, long day, Stats.Snapshot snapshot) {
         if (!this.diaryGenerator.hasApiKey()) {
             AIDiaryClient.LOGGER.error("Gemini API key is not set");
             return;
@@ -137,7 +137,7 @@ public class Trigger {
             AIDiaryClient.LOGGER.warn("Diary generation already running, skipping day {}", day);
             return;
         }
-        String languageLabel = Text.translatable("diary.text.language").getString();
+        String languageLabel = Component.translatable("diary.text.language").getString();
         this.pendingDiary = this.diaryGenerator.requestDiary(day, snapshot, languageLabel);
         this.pendingDiary.whenComplete((text, throwable) -> {
             if (throwable != null) {
@@ -154,28 +154,28 @@ public class Trigger {
         });
     }
 
-    private void deliverDiary(MinecraftClient client, String diaryText) {
+    private void deliverDiary(Minecraft client, String diaryText) {
         if (diaryText == null || diaryText.isEmpty()) {
             return;
         }
-        IntegratedServer server = client.getServer();
+        IntegratedServer server = client.getSingleplayerServer();
         if (server == null) {
             AIDiaryClient.LOGGER.error("Cannot deliver diary because client server is null");
             return;
         }
-        ServerCommandSource source = server.getCommandSource();
-        CommandManager commandManager = server.getCommandManager();
+        CommandSourceStack source = server.createCommandSourceStack();
+        Commands commandManager = server.getCommands();
         for (String chunk : this.diaryGenerator.chunkForChat(diaryText)) {
             String cmd = "say " + chunk;
-            commandManager.parseAndExecute(source, cmd);
+            commandManager.performPrefixedCommand(source, cmd);
         }
     }
 
-    private void notifyFailure(MinecraftClient client, String reason) {
+    private void notifyFailure(Minecraft client, String reason) {
         if (client.player == null) {
             return;
         }
         String message = reason == null ? "Gemini request failed." : reason;
-        client.player.sendMessage(Text.literal("[AI Diary] " + message), false);
+        client.player.sendSystemMessage(Component.literal("[AI Diary] " + message));
     }
 }

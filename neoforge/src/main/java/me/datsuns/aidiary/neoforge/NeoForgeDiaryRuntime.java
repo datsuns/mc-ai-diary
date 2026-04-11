@@ -8,7 +8,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -60,7 +59,7 @@ public final class NeoForgeDiaryRuntime {
         trackMovement(player);
         trackBiome(player);
 
-        long day = player.level().getDayTime() / ModConstants.TICKS_PER_DAY;
+        long day = player.level().getOverworldClockTime() / ModConstants.TICKS_PER_DAY;
         if (this.currentDay == -1) {
             this.currentDay = day;
             return;
@@ -85,8 +84,9 @@ public final class NeoForgeDiaryRuntime {
     }
 
     private void trackBiome(LocalPlayer player) {
-        Optional<Identifier> biomeId = player.level().getBiome(player.blockPosition()).unwrapKey().map(key -> key.identifier());
-        biomeId.ifPresent(id -> this.stats.addVisitedBiome(id.getPath()));
+        player.level().getBiome(player.blockPosition()).unwrapKey().ifPresent(key -> {
+            this.stats.addVisitedBiome(key.toString());
+        });
     }
 
     private void triggerDiaryGeneration(long day, Stats.Snapshot snapshot) {
@@ -138,6 +138,6 @@ public final class NeoForgeDiaryRuntime {
             return;
         }
         String message = reason == null ? "Gemini request failed." : reason;
-        minecraft.player.displayClientMessage(Component.literal("[AI Diary] " + message), false);
+        minecraft.player.sendSystemMessage(Component.literal("[AI Diary] " + message));
     }
 }

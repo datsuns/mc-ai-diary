@@ -2,7 +2,7 @@ import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.SourceSetContainer
 
 plugins {
-    id 'fabric-loom'
+    id 'net.fabricmc.fabric-loom'
     id 'maven-publish'
     id "com.modrinth.minotaur"
 }
@@ -37,20 +37,19 @@ loom {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     implementation project(":common")
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // Uncomment the following line to enable the deprecated Fabric API modules.
     // These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
 
     // modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
 
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
+    api("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 }
@@ -64,14 +63,18 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 21
+    it.options.release = 25
 }
 
 java {
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+sourcesJar {
+    archiveFileName = "ai-diary-${project.mod_version}-fabric-sources.jar"
 }
 
 jar {
@@ -84,17 +87,11 @@ jar {
 
     from(commonMain.output)
     dependsOn(commonProject.tasks.named("classes"))
-}
 
-tasks.register("fabricJarName") // placeholder to keep block structure? not needed
-
-tasks.named("remapJar") {
     archiveFileName = "ai-diary-${project.mod_version}-fabric.jar"
 }
 
-tasks.named("remapSourcesJar") {
-    archiveFileName = "ai-diary-${project.mod_version}-fabric-sources.jar"
-}
+// tasks.register("fabricJarName") // removed
 
 // configure the maven publication
 publishing {
@@ -117,8 +114,8 @@ modrinth {
     projectId = "${project.modrinth_project_id}"
     versionNumber = "v${project.mod_version}-Fabric"
     versionName = "v${project.mod_version}-mc${project.minecraft_version}-fabric"
-    uploadFile = remapJar
-    gameVersions = ['1.21.11']
+    uploadFile = jar
+    gameVersions = ['26.1.1']
     loaders = ['fabric']
     dependencies = [
             new ModDependency('P7dR8mSH', 'required'), // Fabric API
