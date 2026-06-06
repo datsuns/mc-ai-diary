@@ -158,16 +158,11 @@ public class Trigger {
         if (diaryText == null || diaryText.isEmpty()) {
             return;
         }
-        IntegratedServer server = client.getSingleplayerServer();
-        if (server == null) {
-            AIDiaryClient.LOGGER.error("Cannot deliver diary because client server is null");
+        if (client.player == null) {
             return;
         }
-        CommandSourceStack source = server.createCommandSourceStack();
-        Commands commandManager = server.getCommands();
         for (String chunk : this.diaryGenerator.chunkForChat(diaryText)) {
-            String cmd = "say " + chunk;
-            commandManager.performPrefixedCommand(source, cmd);
+            client.player.sendSystemMessage(Component.literal(chunk));
         }
     }
 

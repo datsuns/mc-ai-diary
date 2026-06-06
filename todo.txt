@@ -1,2 +1,3 @@
 [ ] add config screen to specify API key
 [ ] hot reloading when config file changed
+[x] dont work when connected to a server
