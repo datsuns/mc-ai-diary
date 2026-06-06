@@ -1,0 +1,121 @@
+package me.datsuns.aidiary.client.gui;
+
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+
+public class AIDiaryConfigScreen extends Screen {
+    private final Screen parent;
+    private final String initialApiKey;
+    private final Consumer<String> onSave;
+
+    private EditBox apiKeyBox;
+    private Button validateButton;
+    private String validationStatus = "";
+    private int validationColor = 0xFFFFFF;
+
+    public AIDiaryConfigScreen(Screen parent, String initialApiKey, Consumer<String> onSave) {
+        super(Component.literal("AI Diary Configuration"));
+        this.parent = parent;
+        this.initialApiKey = initialApiKey == null ? "" : initialApiKey;
+        this.onSave = onSave;
+    }
+
+    @Override
+    protected void init() {
+        int centerX = this.width / 2;
+        int centerY = this.height / 2;
+
+        this.apiKeyBox = new EditBox(this.font, centerX - 150, centerY - 20, 200, 20, Component.literal("API Key"));
+        this.apiKeyBox.setMaxLength(256);
+        this.apiKeyBox.setValue(this.initialApiKey);
+        
+        try {
+            for (java.lang.reflect.Method m : EditBox.class.getMethods()) {
+                if (m.getParameterCount() == 1 && m.getParameterTypes()[0] == java.util.function.BiFunction.class) {
+                    m.invoke(this.apiKeyBox, (java.util.function.BiFunction<String, Integer, FormattedCharSequence>) (string, firstCharacterIndex) -> {
+                        String masked = "*".repeat(string.length());
+                        return FormattedCharSequence.forward(masked, Style.EMPTY);
+                    });
+                    break;
+                }
+            }
+        } catch (Exception e) {}
+        
+        this.addRenderableWidget(this.apiKeyBox);
+
+        this.validateButton = Button.builder(Component.literal("Validate"), button -> validateApiKey())
+                .bounds(centerX + 60, centerY - 20, 90, 20)
+                .build();
+        this.addRenderableWidget(this.validateButton);
+
+        Button saveButton = Button.builder(Component.literal("Save & Close"), button -> {
+            this.onSave.accept(this.apiKeyBox.getValue());
+            if (this.minecraft != null) {
+                this.minecraft.setScreen(this.parent);
+            }
+        }).bounds(centerX - 100, centerY + 30, 200, 20).build();
+        this.addRenderableWidget(saveButton);
+    }
+
+    private void validateApiKey() {
+        this.validationStatus = "Validating...";
+        this.validationColor = 0xFFFF00;
+        this.validateButton.active = false;
+
+        String key = this.apiKeyBox.getValue();
+        CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpClient client = HttpClient.newBuilder().build();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/models?key=" + key))
+                        .GET()
+                        .build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                return response.statusCode() == 200;
+            } catch (Exception e) {
+                return false;
+            }
+        }).thenAccept(isValid -> {
+            if (this.minecraft != null) {
+                this.minecraft.execute(() -> {
+                    this.validationStatus = isValid ? "Valid API Key" : "Invalid API Key";
+                    this.validationColor = isValid ? 0x00FF00 : 0xFF0000;
+                    this.validateButton.active = true;
+                });
+            }
+        });
+    }
+
+    @Override
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(poseStack);
+        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 20, 0xFFFFFF);
+        
+        drawString(poseStack, this.font, "Gemini API Key:", this.width / 2 - 150, this.height / 2 - 35, 0xA0A0A0);
+
+        if (!this.validationStatus.isEmpty()) {
+            drawString(poseStack, this.font, this.validationStatus, this.width / 2 - 150, this.height / 2 + 5, this.validationColor);
+        }
+
+        super.render(poseStack, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void onClose() {
+        if (this.minecraft != null) {
+            this.minecraft.setScreen(this.parent);
+        }
+    }
+}

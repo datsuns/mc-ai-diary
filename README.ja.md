@@ -46,6 +46,13 @@ Fabric版とNeoForge版に対応しています。
 
 ### 取得したGeminiのAPIキーをmodに設定する
 
+#### ver3.1.0以降
+
+* 設定メニューからAPIキーを設定してください
+  * ![the config screen](./images/config_gemini_api_key_ja.png)
+
+#### ver3.1.0未満
+
 * 本modをインストールし、一度Minecraftを起動してください
 * Minecraftの起動構成フォルダの`config`フォルダを確認します
   * ![config location](./images/config_01_location.png)

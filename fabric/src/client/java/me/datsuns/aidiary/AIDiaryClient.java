@@ -9,7 +9,7 @@ import me.datsuns.aidiary.ModConstants;
 
 public class AIDiaryClient implements ClientModInitializer {
     public static final Logger LOGGER = ModConstants.LOGGER;
-    public Trigger Trigger;
+    public static Trigger Trigger;
     public static ModConfig ModConfig;
 
     @Override
@@ -18,9 +18,9 @@ public class AIDiaryClient implements ClientModInitializer {
         AutoConfig.register(ModConfig.class, Toml4jConfigSerializer::new);
         this.ModConfig = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
-        this.Trigger = new Trigger(
+        Trigger = new Trigger(
                 new Stats(),
-                new DiaryGenerator(this.ModConfig.GeminiApikey)
+                new DiaryGenerator(ModConfig.GeminiApikey)
         );
     }
 }

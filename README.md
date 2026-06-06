@@ -45,6 +45,13 @@ This mod ships builds for Fabric and NeoForge.
 
 ### Set API key to this mod
 
+#### after v3.1.0 ~ 
+
+* set API key by config menu
+  * ![config screen](./images/config_gemini_api_key_en.png)
+
+#### ~ v3.0.0
+
 * Install this mod, and once start Minecraft.
 * Open environment folder of Minecraft, and open `config` folder.
   * ![config location](./images/config_01_location.png)

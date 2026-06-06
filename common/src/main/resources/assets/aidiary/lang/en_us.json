@@ -1,3 +1,14 @@
 {
-  "diary.text.language": "English"
+  "diary.text.language": "English",
+  "aidiary.config.title": "AI Diary Configuration",
+  "aidiary.config.apikey.label": "Gemini API Key:",
+  "aidiary.config.apikey.placeholder": "API Key",
+  "aidiary.config.button.validate": "Validate",
+  "aidiary.config.button.save": "Save & Close",
+  "aidiary.config.button.cancel": "Cancel",
+  "aidiary.config.status.empty": "API Key is empty!",
+  "aidiary.config.status.validating": "Validating...",
+  "aidiary.config.status.success": "Validation Successful!",
+  "aidiary.config.status.failed": "Validation Failed! (HTTP %s)",
+  "aidiary.config.status.error": "Error: %s"
 }

@@ -19,6 +19,11 @@ public final class NeoForgeConfig {
         return CLIENT_VALUES.geminiApiKey.get();
     }
 
+    public static void setGeminiApiKey(String key) {
+        CLIENT_VALUES.geminiApiKey.set(key);
+        CLIENT_SPEC.save();
+    }
+
     private static final class ConfigValues {
         private final ModConfigSpec.ConfigValue<String> geminiApiKey;
 

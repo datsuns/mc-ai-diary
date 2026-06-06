@@ -1,3 +1,14 @@
 {
-  "diary.text.language": "Japanese"
+  "diary.text.language": "Japanese",
+  "aidiary.config.title": "AI Dialy 設定",
+  "aidiary.config.apikey.label": "Gemini APIキー:",
+  "aidiary.config.apikey.placeholder": "APIキー",
+  "aidiary.config.button.validate": "確認",
+  "aidiary.config.button.save": "保存して閉じる",
+  "aidiary.config.button.cancel": "キャンセル",
+  "aidiary.config.status.empty": "APIキーが空です！",
+  "aidiary.config.status.validating": "確認中...",
+  "aidiary.config.status.success": "確認成功！",
+  "aidiary.config.status.failed": "確認失敗！ (HTTP %s)",
+  "aidiary.config.status.error": "エラー: %s"
 }

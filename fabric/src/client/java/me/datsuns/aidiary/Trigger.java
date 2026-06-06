@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class Trigger {
     private final Stats stats;
-    private final DiaryGenerator diaryGenerator;
+    private DiaryGenerator diaryGenerator;
     private long currentDay;
     private boolean hasPreviousPosition;
     private Vec3 previousPosition;
@@ -38,6 +38,10 @@ public class Trigger {
         this.currentDay = -1;
         this.previousPosition = Vec3.ZERO;
         registerCallback();
+    }
+
+    public void updateApiKey(String newKey) {
+        this.diaryGenerator = new DiaryGenerator(newKey);
     }
 
     private void registerCallback() {
