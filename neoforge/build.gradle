@@ -149,7 +149,7 @@ modrinth {
     versionNumber = "v${project.mod_version}-NeoForge"
     versionName = "v${project.mod_version}-mc${project.minecraft_version}-neoforge"
     uploadFile = jar
-    gameVersions = ['26.1.1']
+    gameVersions = ['26.1.2']
     loaders = ['neoforge']
     dependencies = [
             new ModDependency('9s6osm5g', 'required'),

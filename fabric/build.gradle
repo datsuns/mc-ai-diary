@@ -115,7 +115,7 @@ modrinth {
     versionNumber = "v${project.mod_version}-Fabric"
     versionName = "v${project.mod_version}-mc${project.minecraft_version}-fabric"
     uploadFile = jar
-    gameVersions = ['26.1.1']
+    gameVersions = ['26.1.2']
     loaders = ['fabric']
     dependencies = [
             new ModDependency('P7dR8mSH', 'required'), // Fabric API
