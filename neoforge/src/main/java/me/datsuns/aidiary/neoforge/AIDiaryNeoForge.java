@@ -8,11 +8,17 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import me.datsuns.aidiary.client.gui.AIDiaryConfigScreen;
+
 @Mod(ModConstants.MOD_ID)
 public class AIDiaryNeoForge {
 
     public AIDiaryNeoForge(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.CLIENT_SPEC, "aidiary.toml");
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (container, parent) -> new AIDiaryConfigScreen(parent, NeoForgeConfig.getGeminiApiKey(), newKey -> {
+            NeoForgeConfig.setGeminiApiKey(newKey);
+        }));
         modEventBus.addListener(this::onClientSetup);
         modEventBus.addListener(this::onConfigReload);
     }

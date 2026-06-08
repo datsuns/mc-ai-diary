@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class Trigger {
     private final Stats stats;
-    private final DiaryGenerator diaryGenerator;
+    private DiaryGenerator diaryGenerator;
     private long currentDay;
     private boolean hasPreviousPosition;
     private Vec3d previousPosition;
@@ -38,6 +38,10 @@ public class Trigger {
         this.currentDay = -1;
         this.previousPosition = Vec3d.ZERO;
         registerCallback();
+    }
+
+    public void updateApiKey(String newKey) {
+        this.diaryGenerator = new DiaryGenerator(newKey);
     }
 
     private void registerCallback() {
@@ -158,16 +162,11 @@ public class Trigger {
         if (diaryText == null || diaryText.isEmpty()) {
             return;
         }
-        IntegratedServer server = client.getServer();
-        if (server == null) {
-            AIDiaryClient.LOGGER.error("Cannot deliver diary because client server is null");
+        if (client.player == null) {
             return;
         }
-        ServerCommandSource source = server.getCommandSource();
-        CommandManager commandManager = server.getCommandManager();
         for (String chunk : this.diaryGenerator.chunkForChat(diaryText)) {
-            String cmd = "say " + chunk;
-            commandManager.parseAndExecute(source, cmd);
+            client.player.sendMessage(Text.literal(chunk), false);
         }
     }
 

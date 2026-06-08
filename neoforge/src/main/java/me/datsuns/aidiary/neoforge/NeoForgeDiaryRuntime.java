@@ -121,14 +121,11 @@ public final class NeoForgeDiaryRuntime {
             return;
         }
         Minecraft minecraft = Minecraft.getInstance();
-        MinecraftServer server = minecraft.getSingleplayerServer();
-        if (server == null) {
-            ModConstants.LOGGER.error("Cannot deliver diary because server is null");
+        if (minecraft.player == null) {
             return;
         }
-        CommandSourceStack source = server.createCommandSourceStack();
         for (String chunk : this.diaryGenerator.chunkForChat(diaryText)) {
-            server.getCommands().performPrefixedCommand(source, "say " + chunk);
+            minecraft.player.displayClientMessage(Component.literal(chunk), false);
         }
     }
 

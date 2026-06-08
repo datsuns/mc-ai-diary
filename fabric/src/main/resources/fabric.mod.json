@@ -20,6 +20,9 @@
 		],
 		"client": [
 			"me.datsuns.aidiary.AIDiaryClient"
+		],
+		"modmenu": [
+			"me.datsuns.aidiary.ModMenuIntegration"
 		]
 	},
 	"mixins": [
