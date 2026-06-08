@@ -30,7 +30,8 @@ Fabric版とNeoForge版に対応しています。
 * **Fabric版**: 以下の依存modをインストールしてください
   * [Fabric API](https://modrinth.com/mod/fabric-api)
   * [Cloth Config API](https://modrinth.com/mod/cloth-config)
-* **NeoForge版**: 追加の依存modは不要です
+* **NeoForge版**: 以下の依存modをインストールしてください
+  * [Cloth Config API](https://modrinth.com/mod/cloth-config)
 
 ### GeminiのAPIキーの取得
 
@@ -45,6 +46,13 @@ Fabric版とNeoForge版に対応しています。
   * **注意:** このAPIキーは自分以外の人には見せないようにしましょう
 
 ### 取得したGeminiのAPIキーをmodに設定する
+
+#### ver3.1.0以降
+
+* 設定メニューからAPIキーを設定してください
+  * ![the config screen](./images/config_gemini_api_key_ja.png)
+
+#### ver3.1.0まで
 
 * 本modをインストールし、一度Minecraftを起動してください
 * Minecraftの起動構成フォルダの`config`フォルダを確認します

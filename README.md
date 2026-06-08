@@ -26,10 +26,11 @@ You need 3 steps to use this mod.
 
 This mod ships builds for Fabric and NeoForge.
 
-* **Fabric**: install the following dependencies
+* **Fabric**: install the following dependencies.
   * [fabric API](https://modrinth.com/mod/fabric-api)
   * [cloth-config](https://modrinth.com/mod/cloth-config)
-* **NeoForge**: no additional runtime dependencies are required.
+* **NeoForge**: install the following dependencies.
+  * [cloth-config](https://modrinth.com/mod/cloth-config)
 
 ### Generate Gemini API key
 
@@ -44,6 +45,13 @@ This mod ships builds for Fabric and NeoForge.
   * **NOTE:** Don't share this API key to ANYONE.
 
 ### Set API key to this mod
+
+#### after v3.1.0 ~
+
+* set API key by config menu
+  * ![config screen](./images/config_gemini_api_key_en.png)
+
+#### ~ v3.0.0
 
 * Install this mod, and once start Minecraft.
 * Open environment folder of Minecraft, and open `config` folder.
