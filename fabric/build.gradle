@@ -58,9 +58,10 @@ dependencies {
 
 processResources {
     inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
 
     filesMatching("fabric.mod.json") {
-        expand "version": inputs.properties.version
+        expand "version": inputs.properties.version, "minecraft_version": inputs.properties.minecraft_version
     }
 }
 
@@ -117,7 +118,7 @@ modrinth {
     versionNumber = "v${project.mod_version}-Fabric"
     versionName = "v${project.mod_version}-mc${project.minecraft_version}-fabric"
     uploadFile = jar
-    gameVersions = ['26.1.2']
+    gameVersions = [project.minecraft_version]
     loaders = ['fabric']
     dependencies = [
             new ModDependency('P7dR8mSH', 'required'), // Fabric API

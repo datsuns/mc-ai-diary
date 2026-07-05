@@ -88,7 +88,7 @@ public class AIDiaryConfigScreen extends Screen {
                 .build();
         this.addRenderableWidget(this.saveButton);
 
-        Button cancelButton = Button.builder(Component.translatable("aidiary.config.button.cancel"), button -> this.minecraft.setScreen(this.parent))
+        Button cancelButton = Button.builder(Component.translatable("aidiary.config.button.cancel"), button -> this.minecraft.gui.setScreen(this.parent))
                 .pos(centerX + 5, centerY + 40)
                 .size(145, 20)
                 .build();
@@ -97,7 +97,7 @@ public class AIDiaryConfigScreen extends Screen {
 
     private void saveAndClose() {
         this.saveCallback.accept(this.apiKeyBox.getValue());
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.gui.setScreen(this.parent);
     }
 
     private void validateApiKey() {
